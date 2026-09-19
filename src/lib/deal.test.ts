@@ -6,6 +6,7 @@ import {
   cardShowsAnswer,
   createMatch,
   dealPlayerOptions,
+  isExactCard,
   playBot,
   resolveRound,
   spendHint,
@@ -184,6 +185,39 @@ const anyBinary = CARDS.find((card) => card.encoding === "binary");
 assert.ok(anyBinary);
 assert.match(directTranslation(anyBinary), / = /);
 assert.equal(cardCaption(anyBinary, "hard"), "");
+
+const asciiOne = CARDS.find((card) => card.id === "ascii-49");
+assert.ok(asciiOne);
+for (const prompt of PROMPTS.filter((item) => item.id.startsWith("bin-letter-"))) {
+  const letter = prompt.answer.trim().toUpperCase();
+  for (let i = 0; i < 5; i += 1) {
+    const hand = dealPlayerOptions(prompt);
+    assert.ok(
+      hand.some(
+        (card) =>
+          card.encoding === "ascii" && card.glyph.trim().toUpperCase() === letter,
+      ),
+      `${prompt.id} missing letter ${letter} in ${hand.map((card) => card.glyph).join(" | ")}`,
+    );
+    assert.ok(
+      hand.some((card) => isExactCard(card, prompt)),
+      `${prompt.id} has no scoring card`,
+    );
+    assert.equal(isExactCard(asciiOne, prompt), false);
+  }
+}
+
+for (const prompt of PROMPTS) {
+  for (let i = 0; i < 3; i += 1) {
+    const hand = dealPlayerOptions(prompt);
+    const shown = hand.filter((card) => cardShowsAnswer(card, prompt));
+    assert.ok(shown.length > 0, `${prompt.id} missing shown answer`);
+    assert.ok(
+      shown.some((card) => isExactCard(card, prompt)),
+      `${prompt.id} shown cards are not exact: ${shown.map((card) => card.glyph).join(" | ")}`,
+    );
+  }
+}
 
 console.log(
   `deal.test ok · ${PROMPTS.length} prompts × 3 deals, ${HAND_SIZE} cards each`,

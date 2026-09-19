@@ -105,4 +105,5 @@ export type GameState = {
   answeredAt: number | null;
   storeLabel: string;
   usedPromptIds: string[];
+  correctCallStreak: number;
 };

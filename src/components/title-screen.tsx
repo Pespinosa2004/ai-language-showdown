@@ -47,9 +47,10 @@ export function TitleScreen({
         <p className="max-w-2xl text-pretty text-base leading-7 text-zinc-300 sm:text-lg">
           Six players. Seven encoding cards. Each round a prompt hits the table
           and you answer with binary, hex, or ASCII. The clock is a score
-          multiplier, not a life drain. Call a wrong bot to take a life. Play
-          the wrong card, or call a right bot, and you lose one. You win with at
-          least one life after every bot is out.
+          multiplier, not a life drain. Call a wrong bot to take a life. Two
+          correct calls in a row restore one of yours. Play the wrong card, or
+          call a right bot, and you lose one. You win with at least one life
+          after every bot is out.
         </p>
       </header>
 
@@ -200,9 +201,10 @@ function HowToPlay() {
           <li className="flex gap-2">
             <ShieldAlert className="mt-0.5 size-4 shrink-0 text-amber-300" />
             After the plays, tap any bot whose answer is wrong. That bot loses 1
-            of 3 lives. Tap a bot who was right, or play the wrong card
-            yourself, and you lose a life. Lives carry into the next round. A
-            bot at 0 stays on the felt, darkened, with their last play showing.
+            of 3 lives. Two correct calls in a row restore 1 of your lives, up
+            to 3. Tap a bot who was right, or play the wrong card yourself, and
+            you lose a life. Lives carry into the next round. A bot at 0 stays
+            on the felt, darkened, with their last play showing.
           </li>
           <li>
             Everyone starts with 3 lives. You win if you still have at least 1

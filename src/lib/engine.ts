@@ -45,7 +45,27 @@ function valuesOf(prompt: PromptDef): number[] {
   return prompt.matchValues ?? [];
 }
 
+function isLetterCodePrompt(prompt: PromptDef): boolean {
+  return (
+    prompt.category === "binary" && /^[A-Za-z]$/.test(prompt.answer.trim())
+  );
+}
+
+function letterCodeBits(letter: string): string {
+  return (letter.toUpperCase().charCodeAt(0) - 64).toString(2).padStart(5, "0");
+}
+
 export function isExactCard(card: CardDef, prompt: PromptDef): boolean {
+  if (isLetterCodePrompt(prompt)) {
+    const letter = prompt.answer.trim().toUpperCase();
+    if (card.encoding === "ascii") {
+      return card.glyph.trim().toUpperCase() === letter;
+    }
+    if (card.encoding === "binary") {
+      return normalizeAnswer(card.glyph) === letterCodeBits(letter);
+    }
+    return false;
+  }
   const glyphs = glyphsOf(prompt);
   const values = valuesOf(prompt);
   const glyph = normalizeAnswer(card.glyph);
@@ -138,17 +158,27 @@ export function cardShowsAnswer(card: CardDef, prompt: PromptDef): boolean {
   const glyph = normalizeAnswer(card.glyph);
   const hexless = glyph.replace(/^0x/, "");
   const answers = [prompt.answer, ...(prompt.acceptedAnswers ?? [])];
+  if (isLetterCodePrompt(prompt)) {
+    const letter = prompt.answer.trim().toUpperCase();
+    if (card.encoding === "ascii" && card.glyph.trim().toUpperCase() === letter) {
+      return true;
+    }
+    return card.encoding === "binary" && glyph === letterCodeBits(letter);
+  }
   for (const raw of answers) {
     const normalized = normalizeAnswer(raw);
     if (!normalized) continue;
     if (glyph === normalized) return true;
-    const formatted = normalizeAnswer(formatAnswerGlyph(raw, prompt.category));
+    const formatted = normalizeAnswer(
+      formatAnswerGlyph(raw, prompt.category, prompt.text),
+    );
     if (glyph === formatted) return true;
     const bits = normalized.replace(/^0b/, "");
     if (
+      card.encoding === "binary" &&
       /^[01]{4,}$/.test(bits) &&
-      /^[01]+$/.test(glyph) &&
-      Number.parseInt(bits, 2) === Number.parseInt(glyph, 2)
+      /^[01]{4,}$/.test(glyph) &&
+      (glyph === bits || glyph === bits.padStart(glyph.length, "0"))
     ) {
       return true;
     }
@@ -374,6 +404,7 @@ export function createMatch(playerName: string, storeLabel: string): GameState {
     answeredAt: null,
     storeLabel,
     usedPromptIds: [],
+    correctCallStreak: 0,
   };
 }
 
@@ -483,7 +514,7 @@ function enterAccuseIfReady(state: GameState, now = Date.now()): GameState {
       ...state.logs,
       line(
         "warn",
-        "Call a wrong bot to take a life. A correct bot — or your own wrong card — costs you a life.",
+        "Call a wrong bot to take a life. Two correct calls in a row restore 1 of yours (max 3). A correct bot — or your own wrong card — costs you a life.",
       ),
     ],
   };
@@ -588,6 +619,10 @@ function loseLife(player: PlayerState) {
   player.health = Math.max(0, player.health - 1);
 }
 
+function gainLife(player: PlayerState) {
+  player.health = Math.min(MAX_HEALTH, player.health + 1);
+}
+
 export function resolveRound(state: GameState): GameState {
   if (state.phase !== "accusing" || !state.prompt) return state;
   const prompt = state.prompt;
@@ -596,19 +631,23 @@ export function resolveRound(state: GameState): GameState {
   ];
   let correctCalls = state.correctCalls;
   let falseCalls = state.falseCalls;
+  let correctCallStreak = state.correctCallStreak ?? 0;
 
   const players = state.players.map((player) => ({ ...player }));
   const you = players.find((player) => player.isHuman);
   if (!you) return state;
-  const youQuality = you.played ? matchQuality(you.played, prompt) : "miss";
+  const youCorrect = Boolean(
+    you.played &&
+      (isExactCard(you.played, prompt) || cardShowsAnswer(you.played, prompt)),
+  );
   const elapsed = Math.max(
     0,
     (state.answeredAt ?? Date.now()) - (state.promptStartedAt || Date.now()),
   );
-  const points = roundScore(prompt.difficulty, elapsed, youQuality === "exact");
+  const points = roundScore(prompt.difficulty, elapsed, youCorrect);
   const multiplier = speedMultiplier(elapsed);
 
-  if (youQuality === "exact") {
+  if (youCorrect) {
     logs.push(
       line(
         "good",
@@ -640,40 +679,61 @@ export function resolveRound(state: GameState): GameState {
     }
   }
 
-  for (const player of players) {
-    if (player.isHuman || player.eliminated || !player.played) continue;
-    const quality = matchQuality(player.played, prompt);
-    const accused = state.accusedIds.includes(player.id);
-    if (!accused) {
-      if (quality !== "exact") {
-        logs.push(
-          line(
-            "warn",
-            `${player.name}'s ${player.played.glyph} was wrong. You did not call them, so they keep that life.`,
-          ),
-        );
-      }
+  for (const id of state.accusedIds) {
+    const player = players.find((item) => item.id === id);
+    if (!player || player.isHuman || player.eliminated || !player.played) {
       continue;
     }
+    const quality = matchQuality(player.played, prompt);
     if (quality === "exact") {
       loseLife(you);
       falseCalls += 1;
+      correctCallStreak = 0;
       logs.push(
         line(
           "bad",
           `${player.name} was right (${player.played.glyph} = ${player.played.value}). False call. You lose 1 life.`,
         ),
       );
-    } else {
-      loseLife(player);
-      correctCalls += 1;
-      logs.push(
-        line(
-          "good",
-          `Called. ${player.name} played ${player.played.glyph} (${player.played.value}). They lose 1 life.`,
-        ),
-      );
+      continue;
     }
+    loseLife(player);
+    correctCalls += 1;
+    correctCallStreak += 1;
+    logs.push(
+      line(
+        "good",
+        `Called. ${player.name} played ${player.played.glyph} (${player.played.value}). They lose 1 life.`,
+      ),
+    );
+    if (correctCallStreak >= 2) {
+      correctCallStreak = 0;
+      if (you.health < MAX_HEALTH) {
+        gainLife(you);
+        logs.push(
+          line("good", "Two correct calls in a row. You recover 1 life."),
+        );
+      } else {
+        logs.push(
+          line(
+            "good",
+            "Two correct calls in a row. You already hold 3 lives.",
+          ),
+        );
+      }
+    }
+  }
+
+  for (const player of players) {
+    if (player.isHuman || player.eliminated || !player.played) continue;
+    if (state.accusedIds.includes(player.id)) continue;
+    if (matchQuality(player.played, prompt) === "exact") continue;
+    logs.push(
+      line(
+        "warn",
+        `${player.name}'s ${player.played.glyph} was wrong. You did not call them, so they keep that life.`,
+      ),
+    );
   }
 
   for (const player of players) {
@@ -720,9 +780,10 @@ export function resolveRound(state: GameState): GameState {
     winnerId,
     correctCalls,
     falseCalls,
+    correctCallStreak,
     score: state.score + points,
     lastRoundPoints: points,
-    lastAnswerCorrect: youQuality === "exact",
+    lastAnswerCorrect: youCorrect,
   };
 }
 
