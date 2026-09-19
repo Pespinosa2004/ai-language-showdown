@@ -6,7 +6,7 @@ import {
   roundAccuseMs,
   roundTimerMs,
 } from "@/lib/bots";
-import { normalizeAnswer } from "@/lib/questions";
+import { formatAnswerGlyph, normalizeAnswer } from "@/lib/questions";
 import { basePoints, roundScore, speedMultiplier } from "@/lib/scoring";
 import type {
   BotDef,
@@ -49,8 +49,23 @@ export function isExactCard(card: CardDef, prompt: PromptDef): boolean {
   const values = valuesOf(prompt);
   const glyph = normalizeAnswer(card.glyph);
   const hexless = glyph.replace(/^0x/, "");
-  if (glyphs.includes(glyph) || glyphs.includes(hexless)) {
+  if (glyphs.includes(glyph)) {
     return true;
+  }
+  if (card.encoding === "hex") {
+    for (const candidate of glyphs) {
+      const hex = candidate.replace(/^0x/, "");
+      if (!/^[0-9a-f]+$/.test(hex)) continue;
+      const namedAsHex = candidate.startsWith("0x") || /[a-f]/.test(hex);
+      if (!namedAsHex) continue;
+      if (hexless === hex) return true;
+      if (
+        /^[0-9a-f]+$/.test(hexless) &&
+        Number.parseInt(hexless, 16) === Number.parseInt(hex, 16)
+      ) {
+        return true;
+      }
+    }
   }
   if (card.encoding === "ascii") {
     const letter = card.glyph.trim().toLowerCase();
@@ -99,6 +114,161 @@ function fillHand(used: Set<string>, start: CardDef[]): CardDef[] {
     hand.push(card);
   }
   return shuffle(hand).slice(0, HAND_SIZE);
+}
+
+function encodingForAnswer(prompt: PromptDef): PromptDef["category"] {
+  const raw = prompt.answer.trim();
+  if (/^[01]{4,}$/.test(raw) || /^0b[01]+$/i.test(raw)) return "binary";
+  if (/^0x[0-9A-Fa-f]+$/i.test(raw)) return "hex";
+  if (prompt.category === "hex" && /[A-F]/i.test(raw) && /^[0-9A-F]+$/i.test(raw)) {
+    return "hex";
+  }
+  if (raw.length === 1 && /[A-Za-z$]/.test(raw)) return "ascii";
+  return prompt.category === "mixed" ? "binary" : prompt.category;
+}
+
+export function cardShowsAnswer(card: CardDef, prompt: PromptDef): boolean {
+  const glyph = normalizeAnswer(card.glyph);
+  const hexless = glyph.replace(/^0x/, "");
+  const answers = [prompt.answer, ...(prompt.acceptedAnswers ?? [])];
+  for (const raw of answers) {
+    const normalized = normalizeAnswer(raw);
+    if (!normalized) continue;
+    if (glyph === normalized) return true;
+    const formatted = normalizeAnswer(formatAnswerGlyph(raw, prompt.category));
+    if (glyph === formatted) return true;
+    const bits = normalized.replace(/^0b/, "");
+    if (
+      /^[01]{4,}$/.test(bits) &&
+      /^[01]+$/.test(glyph) &&
+      Number.parseInt(bits, 2) === Number.parseInt(glyph, 2)
+    ) {
+      return true;
+    }
+    const namedAsHex =
+      /^0x/i.test(raw.trim()) ||
+      (/[a-f]/i.test(normalized.replace(/^0x/, "")) &&
+        /^[0-9a-f]+$/.test(normalized.replace(/^0x/, "")));
+    if (namedAsHex) {
+      const answerHex = normalized.replace(/^0x/, "");
+      if (
+        /^[0-9a-f]+$/.test(hexless) &&
+        /^[0-9a-f]+$/.test(answerHex) &&
+        Number.parseInt(hexless, 16) === Number.parseInt(answerHex, 16)
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+export function answerCardFor(prompt: PromptDef): CardDef {
+  const encoding = encodingForAnswer(prompt);
+  const value = valuesOf(prompt)[0] ?? 0;
+  return {
+    id: `answer-${prompt.id}`,
+    encoding: encoding === "mixed" ? "binary" : encoding,
+    glyph: formatAnswerGlyph(prompt.answer, encoding),
+    value,
+    name: "Bank answer",
+    flavor: prompt.explanation,
+    rarity: "rare",
+  };
+}
+
+export function assertHandContainsCorrect(
+  hand: CardDef[],
+  prompt: PromptDef,
+): void {
+  const present = hand.some((card) => cardShowsAnswer(card, prompt));
+  if (present) return;
+  const message = `Correct answer "${prompt.answer}" missing from the 7 cards for ${prompt.id}`;
+  if (process.env.NODE_ENV !== "production") {
+    throw new Error(message);
+  }
+  console.error(message);
+}
+
+function pickCorrectCard(prompt: PromptDef, used: Set<string>): CardDef {
+  const showing = CARDS.filter(
+    (card) => !used.has(card.id) && cardShowsAnswer(card, prompt),
+  );
+  const preferred = encodingForAnswer(prompt);
+  const ranked = [
+    ...showing.filter((card) => card.encoding === preferred),
+    ...showing,
+  ];
+  const found = ranked[0];
+  if (found) {
+    used.add(found.id);
+    return found;
+  }
+  const made = answerCardFor(prompt);
+  used.add(made.id);
+  return made;
+}
+
+function isDistractor(card: CardDef, prompt: PromptDef): boolean {
+  return !isExactCard(card, prompt) && !cardShowsAnswer(card, prompt);
+}
+
+export function dealPlayerOptions(
+  prompt: PromptDef,
+  used: Set<string> = new Set(),
+): CardDef[] {
+  const correct = pickCorrectCard(prompt, used);
+  const distractors: CardDef[] = [];
+  while (distractors.length < HAND_SIZE - 1) {
+    const close = takeUnique(
+      used,
+      (card) =>
+        isDistractor(card, prompt) && matchQuality(card, prompt) === "close",
+    );
+    if (!close) break;
+    distractors.push(close);
+  }
+  for (const card of shuffle(CARDS)) {
+    if (distractors.length >= HAND_SIZE - 1) break;
+    if (used.has(card.id) || !isDistractor(card, prompt)) continue;
+    used.add(card.id);
+    distractors.push(card);
+  }
+  let offset = 1;
+  while (distractors.length < HAND_SIZE - 1 && offset < 64) {
+    const value = (valuesOf(prompt)[0] ?? 1) + offset;
+    offset += 1;
+    const encoding = encodingForAnswer(prompt);
+    const id = `distract-${prompt.id}-${value}`;
+    if (used.has(id)) continue;
+    used.add(id);
+    distractors.push({
+      id,
+      encoding: encoding === "mixed" ? "binary" : encoding,
+      glyph:
+        encoding === "hex"
+          ? `0x${value.toString(16).toUpperCase()}`
+          : encoding === "ascii" && value >= 32 && value <= 126
+            ? String.fromCharCode(value)
+            : value
+                .toString(2)
+                .padStart(8, "0")
+                .replace(/(.{4})/g, "$1 ")
+                .trim(),
+      value,
+      name: `Near miss ${value}`,
+      flavor: "A neighboring quantity that is not the bank answer.",
+      rarity: "common",
+    });
+  }
+  const hand = shuffle([correct, ...distractors.slice(0, HAND_SIZE - 1)]);
+  assertHandContainsCorrect(hand, prompt);
+  if (hand.length !== HAND_SIZE && process.env.NODE_ENV !== "production") {
+    throw new Error(
+      `Expected ${HAND_SIZE} answer cards for ${prompt.id}, got ${hand.length}`,
+    );
+  }
+  return hand;
 }
 
 function dealHand(
@@ -176,6 +346,7 @@ export function createMatch(playerName: string, storeLabel: string): GameState {
     falseCalls: 0,
     score: 0,
     lastRoundPoints: 0,
+    lastAnswerCorrect: true,
     promptStartedAt: 0,
     answeredAt: null,
     storeLabel,
@@ -201,12 +372,16 @@ export function beginRound(state: GameState, now = Date.now()): GameState {
       };
     }
     const bot = BOTS.find((item) => item.id === player.id);
-    const wantExact = player.isHuman
-      ? Math.random() < 0.8
-      : Math.random() < (bot?.accuracy ?? 0.5) + 0.08;
+    const hand = player.isHuman
+      ? dealPlayerOptions(prompt, usedCards)
+      : dealHand(
+          prompt,
+          Math.random() < (bot?.accuracy ?? 0.5) + 0.08,
+          usedCards,
+        );
     return {
       ...player,
-      hand: dealHand(prompt, wantExact, usedCards),
+      hand,
       played: null,
       accused: false,
     };
@@ -224,6 +399,7 @@ export function beginRound(state: GameState, now = Date.now()): GameState {
     promptStartedAt: now,
     answeredAt: null,
     lastRoundPoints: 0,
+    lastAnswerCorrect: true,
     usedPromptIds:
       unused.length > 0 ? [...state.usedPromptIds, prompt.id] : [prompt.id],
     logs: [
@@ -410,6 +586,7 @@ export function resolveRound(state: GameState): GameState {
     } else {
       logs.push(line("bad", "You never played a card."));
     }
+    logs.push(line("warn", prompt.explanation));
     if (!you.eliminated) {
       loseLife(you);
       logs.push(line("bad", "Wrong answer. You lose 1 life. No points this round."));
@@ -497,6 +674,7 @@ export function resolveRound(state: GameState): GameState {
     falseCalls,
     score: state.score + points,
     lastRoundPoints: points,
+    lastAnswerCorrect: youQuality === "exact",
   };
 }
 

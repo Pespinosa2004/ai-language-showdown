@@ -96,15 +96,16 @@ export function GameApp() {
 
   useEffect(() => {
     if (state?.phase !== "resolving") return;
+    const ms = state.lastAnswerCorrect ? 5600 : 10000;
     const id = window.setTimeout(() => {
       setState((current) =>
         current && current.phase === "resolving"
           ? advanceAfterResolve(current)
           : current,
       );
-    }, 5600);
+    }, ms);
     return () => window.clearTimeout(id);
-  }, [state?.phase, state?.round]);
+  }, [state?.phase, state?.round, state?.lastAnswerCorrect]);
 
   useEffect(() => {
     if (state?.phase !== "gameover" || saved.current) return;

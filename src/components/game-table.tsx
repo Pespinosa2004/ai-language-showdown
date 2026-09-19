@@ -127,10 +127,24 @@ export function GameTable({
             <p className="mt-2 text-pretty text-lg font-medium text-zinc-50 sm:text-2xl">
               {prompt?.text ?? "The dealer is cutting the deck…"}
             </p>
-            <p className="mt-2 font-mono text-sm text-amber-100">
-              {Math.ceil(remain / 1000)}s
-              {state.phase === "prompting" ? ` · ${liveMultiplier}` : ""}
-            </p>
+            {state.phase === "prompting" || state.phase === "accusing" ? (
+              <p className="mt-2 font-mono text-sm text-amber-100">
+                {Math.ceil(remain / 1000)}s
+                {state.phase === "prompting" ? ` · ${liveMultiplier}` : ""}
+              </p>
+            ) : null}
+            {state.phase === "resolving" || state.phase === "gameover" ? (
+              <ResultBanner
+                correct={state.lastAnswerCorrect}
+                answer={prompt?.answer ?? ""}
+                explanation={prompt?.explanation ?? ""}
+                onContinue={
+                  state.phase === "resolving" && !state.lastAnswerCorrect
+                    ? onNext
+                    : undefined
+                }
+              />
+            ) : null}
             {you.played ? (
               <div className="mt-3 flex justify-center">
                 <EncodingCard
@@ -242,6 +256,48 @@ export function GameTable({
           )}
         </div>
       </section>
+    </div>
+  );
+}
+
+function ResultBanner({
+  correct,
+  answer,
+  explanation,
+  onContinue,
+}: {
+  correct: boolean;
+  answer: string;
+  explanation: string;
+  onContinue?: () => void;
+}) {
+  return (
+    <div
+      role="status"
+      className={cn(
+        "mt-3 rounded-xl border px-3 py-3 text-left",
+        correct
+          ? "border-emerald-400/30 bg-emerald-950/40"
+          : "border-rose-400/40 bg-rose-950/50",
+      )}
+    >
+      <p
+        className={cn(
+          "font-mono text-[10px] tracking-[0.22em]",
+          correct ? "text-emerald-200/80" : "text-rose-200/90",
+        )}
+      >
+        {correct ? "MATCH" : "WRONG"}
+      </p>
+      <p className="mt-1 text-sm font-medium text-zinc-50">
+        Correct answer: <span className="font-mono text-amber-200">{answer}</span>
+      </p>
+      <p className="mt-1 text-sm leading-5 text-zinc-300">{explanation}</p>
+      {onContinue ? (
+        <Button className="mt-3" size="sm" onClick={onContinue}>
+          Continue
+        </Button>
+      ) : null}
     </div>
   );
 }

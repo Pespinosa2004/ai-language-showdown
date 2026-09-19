@@ -7,8 +7,8 @@ A last-player-standing card game about **binary, hex, and ASCII**. You sit at a 
 1. Six seats. You plus Clippy, Hexa, Bitwise, ASCII-8, and NullPtr. Everyone has **3 lives** and is dealt **7 cards**. Lives carry from round to round.
 2. A prompt appears from the question bank — binary, hex, ASCII, and 5-bit letter codes (`00001` is A).
 3. Each card shows an encoding on top and Magic-style flavor text underneath. The flavor hints at the value without spelling out the answer.
-4. Some cards in the shuffle are better matches than others. Exact encodings score. Near-misses are traps.
-5. After the plays, tap any bot whose answer is wrong. That bot loses 1 life. Tap a bot who was right, or play the wrong card yourself, and **you** lose 1 life. Wrong bots you skip keep their lives.
+4. Your seven cards always include the bank answer plus six distractors. Exact encodings score. Near-misses are traps.
+5. After the plays, tap any bot whose answer is wrong. That bot loses 1 life. Tap a bot who was right, or play the wrong card yourself, and **you** lose 1 life. A wrong card pauses on a reveal: correct answer plus a one-line explanation. Wrong bots you skip keep their lives.
 6. A player at 0 lives stays on the felt, darkened, with their last play showing. You win with at least 1 life left after every bot is out.
 7. The clock does not cost a life. Correct answers score **easy 5 / medium 10 / hard 15**, times a speed multiplier: ≤15s ×2, ≤30s ×1.5, ≤60s ×1.25, slower ×1.
 
@@ -17,6 +17,7 @@ A last-player-standing card game about **binary, hex, and ASCII**. You sit at a 
 ```bash
 npm install
 npm run dev
+npm test   # proves every prompt's 7 cards include the bank answer
 ```
 
 Open [http://127.0.0.1:43123](http://127.0.0.1:43123).

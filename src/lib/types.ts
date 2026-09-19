@@ -30,6 +30,7 @@ export type PromptDef = {
   matchValues: number[];
   matchGlyphs: string[];
   hint: string;
+  explanation: string;
 };
 
 export type BotDef = {
@@ -95,6 +96,7 @@ export type GameState = {
   falseCalls: number;
   score: number;
   lastRoundPoints: number;
+  lastAnswerCorrect: boolean;
   promptStartedAt: number;
   answeredAt: number | null;
   storeLabel: string;
