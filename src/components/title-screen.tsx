@@ -77,7 +77,7 @@ export function TitleScreen({
             Sit at the table
           </Button>
           <HowToPlay />
-          <Button size="lg" variant="ghost" asChild>
+          <Button size="lg" variant="outline" asChild>
             <a href="#encoding-bench">Encoding bench</a>
           </Button>
         </div>
@@ -113,31 +113,28 @@ export function TitleScreen({
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[28rem] table-fixed border-collapse font-mono text-xs">
+            <table className="table-fixed border-collapse font-mono text-xs">
+              <colgroup>
+                <col className="w-40" />
+                <col className="w-14" />
+                <col className="w-14" />
+                <col className="w-16" />
+                <col className="w-14" />
+              </colgroup>
               <thead>
                 <tr className="text-[10px] tracking-wide text-zinc-600">
-                  <th className="w-[40%] py-1 pr-3 text-left font-medium">
-                    Name
-                  </th>
-                  <th className="w-[14%] py-1 pr-3 text-left font-medium">
-                    Result
-                  </th>
-                  <th className="w-[15%] py-1 pr-3 text-right font-medium">
-                    Pts
-                  </th>
-                  <th className="w-[16%] py-1 pr-3 text-right font-medium">
-                    Round
-                  </th>
-                  <th className="w-[15%] py-1 text-right font-medium">
-                    Calls
-                  </th>
+                  <th className="py-1 pr-3 text-left font-medium">Name</th>
+                  <th className="py-1 pr-3 text-left font-medium">Result</th>
+                  <th className="py-1 pr-3 text-right font-medium">Pts</th>
+                  <th className="py-1 pr-3 text-right font-medium">Round</th>
+                  <th className="py-1 text-right font-medium">Calls</th>
                 </tr>
               </thead>
               <tbody className="text-zinc-400">
                 {scores.slice(0, 6).map((row) => (
                   <tr key={row.id}>
                     <td
-                      className="max-w-0 truncate py-1 pr-3 text-zinc-200"
+                      className="truncate py-1 pr-3 text-zinc-200"
                       title={row.name}
                     >
                       {row.name}
