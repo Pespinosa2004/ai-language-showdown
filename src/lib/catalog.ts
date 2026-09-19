@@ -376,11 +376,11 @@ function extraCardsFromPrompts(existing: CardDef[]): CardDef[] {
     extras.push(next);
   };
   for (const prompt of PROMPTS) {
-    for (const value of prompt.matchValues) {
+    for (const value of prompt.matchValues ?? []) {
       push(card("binary", value, loreFor(value)));
       push(card("hex", value, loreFor(value)));
     }
-    for (const glyph of prompt.matchGlyphs) {
+    for (const glyph of prompt.matchGlyphs ?? []) {
       if (glyph.length !== 1) continue;
       const upper = glyph.toUpperCase();
       if (/[A-Z]/.test(upper)) {

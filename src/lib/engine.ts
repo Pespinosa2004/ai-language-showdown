@@ -36,29 +36,39 @@ function line(tone: LogLine["tone"], text: string): LogLine {
   return { id: crypto.randomUUID(), tone, text };
 }
 
+function glyphsOf(prompt: PromptDef): string[] {
+  return prompt.matchGlyphs ?? [];
+}
+
+function valuesOf(prompt: PromptDef): number[] {
+  return prompt.matchValues ?? [];
+}
+
 export function isExactCard(card: CardDef, prompt: PromptDef): boolean {
+  const glyphs = glyphsOf(prompt);
+  const values = valuesOf(prompt);
   const glyph = normalizeAnswer(card.glyph);
   const hexless = glyph.replace(/^0x/, "");
-  if (prompt.matchGlyphs.includes(glyph) || prompt.matchGlyphs.includes(hexless)) {
+  if (glyphs.includes(glyph) || glyphs.includes(hexless)) {
     return true;
   }
   if (card.encoding === "ascii") {
     const letter = card.glyph.trim().toLowerCase();
-    if (letter.length === 1 && prompt.matchGlyphs.includes(letter)) return true;
+    if (letter.length === 1 && glyphs.includes(letter)) return true;
   }
-  if (!prompt.matchValues.includes(card.value)) return false;
+  if (!values.includes(card.value)) return false;
   if (prompt.category === "ascii") {
     return card.encoding === "ascii" || card.value > 31;
   }
   if (card.encoding === "ascii") {
-    return prompt.matchGlyphs.includes(card.glyph.trim().toLowerCase());
+    return glyphs.includes(card.glyph.trim().toLowerCase());
   }
   return true;
 }
 
 export function matchQuality(card: CardDef, prompt: PromptDef): MatchQuality {
   if (isExactCard(card, prompt)) return "exact";
-  const close = prompt.matchValues.some(
+  const close = valuesOf(prompt).some(
     (value) =>
       card.value === value + 1 ||
       card.value === value - 1 ||
@@ -219,7 +229,7 @@ export function beginRound(state: GameState, now = Date.now()): GameState {
     logs: [
       line(
         "neutral",
-        `Round ${state.round}. ${livingCount} still standing. ${prompt.difficulty.toUpperCase()} · ${basePoints(prompt.difficulty)} pts. Answer faster for a higher multiplier.`,
+        `Round ${state.round}. ${livingCount} still standing. ${(prompt.difficulty ?? "medium").toUpperCase()} · ${basePoints(prompt.difficulty ?? "medium")} pts. Answer faster for a higher multiplier.`,
       ),
     ],
   };

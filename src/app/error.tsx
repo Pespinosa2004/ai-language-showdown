@@ -25,7 +25,12 @@ export default function ErrorPage({
       <p className="max-w-md text-sm text-zinc-400">
         {error.message || "An unexpected error dropped the cards."}
       </p>
-      <Button onClick={reset}>Reshuffle</Button>
+      <div className="flex flex-wrap justify-center gap-2">
+        <Button onClick={reset}>Reshuffle</Button>
+        <Button variant="ghost" onClick={() => window.location.assign("/")}>
+          Back to title
+        </Button>
+      </div>
     </div>
   );
 }

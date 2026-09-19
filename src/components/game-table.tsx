@@ -121,7 +121,7 @@ export function GameTable({
               {state.phase === "dealing"
                 ? "SHUFFLING"
                 : prompt
-                  ? `${prompt.difficulty.toUpperCase()} · ${basePoints(prompt.difficulty)} PTS`
+                  ? `${(prompt.difficulty ?? "medium").toUpperCase()} · ${basePoints(prompt.difficulty ?? "medium")} PTS`
                   : "PROMPT"}
             </p>
             <p className="mt-2 text-pretty text-lg font-medium text-zinc-50 sm:text-2xl">
@@ -251,5 +251,6 @@ function stampFor(state: GameState, id: string) {
   if (!player || player.eliminated) return null;
   if (state.phase !== "resolving" && state.phase !== "gameover") return null;
   if (!player.played || !state.prompt) return null;
+  if (!state.prompt.matchGlyphs && !state.prompt.matchValues) return null;
   return matchQuality(player.played, state.prompt);
 }
