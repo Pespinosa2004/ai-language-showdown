@@ -2,11 +2,12 @@ import { CARDS, PROMPTS } from "@/lib/catalog";
 import {
   BOTS,
   HAND_SIZE,
+  HINTS_PER_SESSION,
   MAX_HEALTH,
   roundAccuseMs,
   roundTimerMs,
 } from "@/lib/bots";
-import { formatAnswerGlyph, normalizeAnswer } from "@/lib/questions";
+import { explainFromCard, formatAnswerGlyph, normalizeAnswer } from "@/lib/questions";
 import { basePoints, roundScore, speedMultiplier } from "@/lib/scoring";
 import type {
   BotDef,
@@ -118,6 +119,12 @@ function fillHand(used: Set<string>, start: CardDef[]): CardDef[] {
 
 function encodingForAnswer(prompt: PromptDef): PromptDef["category"] {
   const raw = prompt.answer.trim();
+  if (
+    /hexadecimal|in hexadecimal|in hex\b/i.test(prompt.text) &&
+    !/in decimal/i.test(prompt.text)
+  ) {
+    return "hex";
+  }
   if (/^[01]{4,}$/.test(raw) || /^0b[01]+$/i.test(raw)) return "binary";
   if (/^0x[0-9A-Fa-f]+$/i.test(raw)) return "hex";
   if (prompt.category === "hex" && /[A-F]/i.test(raw) && /^[0-9A-F]+$/i.test(raw)) {
@@ -147,8 +154,9 @@ export function cardShowsAnswer(card: CardDef, prompt: PromptDef): boolean {
     }
     const namedAsHex =
       /^0x/i.test(raw.trim()) ||
-      (/[a-f]/i.test(normalized.replace(/^0x/, "")) &&
-        /^[0-9a-f]+$/.test(normalized.replace(/^0x/, "")));
+      (answers.some((item) => /^0x/i.test(item.trim())) &&
+        /^[0-9a-f]+$/.test(normalized) &&
+        /hexadecimal|in hexadecimal|in hex\b/i.test(prompt.text));
     if (namedAsHex) {
       const answerHex = normalized.replace(/^0x/, "");
       if (
@@ -169,7 +177,7 @@ export function answerCardFor(prompt: PromptDef): CardDef {
   return {
     id: `answer-${prompt.id}`,
     encoding: encoding === "mixed" ? "binary" : encoding,
-    glyph: formatAnswerGlyph(prompt.answer, encoding),
+    glyph: formatAnswerGlyph(prompt.answer, encoding, prompt.text),
     value,
     name: "Bank answer",
     flavor: prompt.explanation,
@@ -271,6 +279,17 @@ export function dealPlayerOptions(
   return hand;
 }
 
+function dealHumanHand(prompt: PromptDef, used: Set<string>): CardDef[] {
+  try {
+    return dealPlayerOptions(prompt, used);
+  } catch (error) {
+    console.error(error);
+    const correct = answerCardFor(prompt);
+    used.add(correct.id);
+    return fillHand(used, [correct]);
+  }
+}
+
 function dealHand(
   prompt: PromptDef,
   wantExact: boolean,
@@ -347,6 +366,10 @@ export function createMatch(playerName: string, storeLabel: string): GameState {
     score: 0,
     lastRoundPoints: 0,
     lastAnswerCorrect: true,
+    correctCard: null,
+    hintsRemaining: HINTS_PER_SESSION,
+    hintRound: 0,
+    hintOpen: false,
     promptStartedAt: 0,
     answeredAt: null,
     storeLabel,
@@ -373,7 +396,7 @@ export function beginRound(state: GameState, now = Date.now()): GameState {
     }
     const bot = BOTS.find((item) => item.id === player.id);
     const hand = player.isHuman
-      ? dealPlayerOptions(prompt, usedCards)
+      ? dealHumanHand(prompt, usedCards)
       : dealHand(
           prompt,
           Math.random() < (bot?.accuracy ?? 0.5) + 0.08,
@@ -387,6 +410,13 @@ export function beginRound(state: GameState, now = Date.now()): GameState {
     };
   });
 
+  const youHand =
+    players.find((player) => player.isHuman)?.hand ?? [];
+  const correctCard =
+    youHand.find((card) => cardShowsAnswer(card, prompt)) ??
+    youHand.find((card) => isExactCard(card, prompt)) ??
+    answerCardFor(prompt);
+
   return {
     ...state,
     phase: "prompting",
@@ -394,12 +424,16 @@ export function beginRound(state: GameState, now = Date.now()): GameState {
     players,
     selectedCardId: null,
     accusedIds: [],
-    deadlineAt: now + roundTimerMs(state.round),
+    deadlineAt: now + roundTimerMs(state.round, prompt.difficulty),
     accuseDeadlineAt: 0,
     promptStartedAt: now,
     answeredAt: null,
     lastRoundPoints: 0,
     lastAnswerCorrect: true,
+    correctCard,
+    hintOpen: false,
+    hintsRemaining: state.hintsRemaining ?? HINTS_PER_SESSION,
+    hintRound: state.hintRound ?? 0,
     usedPromptIds:
       unused.length > 0 ? [...state.usedPromptIds, prompt.id] : [prompt.id],
     logs: [
@@ -417,6 +451,9 @@ export function chooseBotCard(
   prompt: PromptDef,
   timerRatio: number,
 ): CardDef {
+  if (!hand.length) {
+    return answerCardFor(prompt);
+  }
   let accuracy = bot.accuracy;
   if (prompt.category === bot.specialty) accuracy += 0.12;
   if (timerRatio < 0.38) accuracy *= 1 - bot.panic * 0.75;
@@ -497,9 +534,11 @@ export function playBot(
   const player = state.players.find((item) => item.id === botId);
   const bot = BOTS.find((item) => item.id === botId);
   if (!player || player.eliminated || player.played || !bot) return state;
+  if (player.hand.length === 0) return state;
   const remain = Math.max(0, state.deadlineAt - now);
-  const total = roundTimerMs(state.round);
+  const total = roundTimerMs(state.round, state.prompt.difficulty);
   const card = chooseBotCard(bot, player.hand, state.prompt, remain / total);
+  if (!card) return state;
   const players = state.players.map((item) =>
     item.id === botId
       ? {
@@ -559,7 +598,8 @@ export function resolveRound(state: GameState): GameState {
   let falseCalls = state.falseCalls;
 
   const players = state.players.map((player) => ({ ...player }));
-  const you = players.find((player) => player.isHuman)!;
+  const you = players.find((player) => player.isHuman);
+  if (!you) return state;
   const youQuality = you.played ? matchQuality(you.played, prompt) : "miss";
   const elapsed = Math.max(
     0,
@@ -586,7 +626,14 @@ export function resolveRound(state: GameState): GameState {
     } else {
       logs.push(line("bad", "You never played a card."));
     }
-    logs.push(line("warn", prompt.explanation));
+    logs.push(
+      line(
+        "warn",
+        state.correctCard
+          ? explainFromCard(prompt, state.correctCard)
+          : prompt.explanation,
+      ),
+    );
     if (!you.eliminated) {
       loseLife(you);
       logs.push(line("bad", "Wrong answer. You lose 1 life. No points this round."));
@@ -646,7 +693,8 @@ export function resolveRound(state: GameState): GameState {
   const livingBots = players.filter(
     (player) => !player.isHuman && player.health > 0 && !player.eliminated,
   );
-  const youNow = players.find((player) => player.isHuman)!;
+  const youNow = players.find((player) => player.isHuman);
+  if (!youNow) return state;
   let phase: GameState["phase"] = "resolving";
   let winnerId: string | null = null;
   if (youNow.health <= 0 || youNow.eliminated) {
@@ -687,10 +735,46 @@ export function advanceAfterResolve(state: GameState): GameState {
     selectedCardId: null,
     accusedIds: [],
     prompt: null,
+    correctCard: null,
+    hintOpen: false,
     logs: [line("neutral", "The dealer gathers the cards.")],
   };
 }
 
 export function youPlayer(state: GameState): PlayerState {
-  return state.players.find((player) => player.isHuman)!;
+  return (
+    state.players.find((player) => player.isHuman) ?? {
+      id: "you",
+      name: state.playerName || "Operator",
+      isHuman: true,
+      health: 0,
+      hand: [],
+      played: null,
+      lastPlayed: null,
+      accused: false,
+      eliminated: true,
+    }
+  );
+}
+
+export function spendHint(state: GameState): GameState {
+  if (!state.prompt) return state;
+  if (state.phase !== "prompting" && state.phase !== "accusing") return state;
+  if (state.hintOpen) {
+    return { ...state, hintOpen: false };
+  }
+  if ((state.hintsRemaining ?? 0) <= 0) return state;
+  return {
+    ...state,
+    hintsRemaining: state.hintsRemaining - 1,
+    hintRound: state.round,
+    hintOpen: true,
+    logs: [
+      ...state.logs,
+      line(
+        "warn",
+        `Hint (${state.hintsRemaining - 1} left): ${state.prompt.hint}`,
+      ),
+    ],
+  };
 }

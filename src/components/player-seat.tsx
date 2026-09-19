@@ -30,23 +30,24 @@ export function PlayerSeat({
   onAccuse,
   canAccuse,
 }: {
-  player: PlayerState;
+  player?: PlayerState;
   bot?: BotDef;
   stamp?: MatchQuality | "accused" | null;
   accused?: boolean;
   onAccuse?: () => void;
   canAccuse?: boolean;
 }) {
+  if (!player) return null;
   const shown = player.eliminated
     ? player.lastPlayed ?? player.played
     : player.played;
   const allowAccuse = Boolean(canAccuse && !player.eliminated && player.played);
 
   return (
-    <div className="flex min-w-0 flex-col items-center gap-2">
+    <div className="flex min-w-0 max-w-[110px] flex-col items-center gap-1.5 sm:max-w-[118px] sm:gap-2">
       <div
         className={cn(
-          "flex max-w-[220px] items-center gap-2 rounded-full border px-3 py-1.5 backdrop-blur-sm",
+          "flex w-full min-w-0 items-center gap-1 rounded-full border px-2 py-1 backdrop-blur-sm sm:px-2.5",
           player.eliminated
             ? "border-white/5 bg-zinc-950/80"
             : "border-white/10 bg-black/35",
@@ -102,7 +103,7 @@ export function PlayerSeat({
           ) : null}
         </div>
       ) : (
-        <div className="flex h-[168px] w-[118px] items-center justify-center rounded-xl border border-dashed border-white/15 bg-black/20 font-mono text-[10px] tracking-[0.2em] text-zinc-500">
+        <div className="flex h-[132px] w-[90px] items-center justify-center rounded-xl border border-dashed border-white/15 bg-black/20 font-mono text-[10px] tracking-[0.2em] text-zinc-500 sm:h-[148px] sm:w-[102px] lg:h-[160px] lg:w-[110px]">
           WAITING
         </div>
       )}

@@ -97,6 +97,10 @@ export type GameState = {
   score: number;
   lastRoundPoints: number;
   lastAnswerCorrect: boolean;
+  correctCard: CardDef | null;
+  hintsRemaining: number;
+  hintRound: number;
+  hintOpen: boolean;
   promptStartedAt: number;
   answeredAt: number | null;
   storeLabel: string;

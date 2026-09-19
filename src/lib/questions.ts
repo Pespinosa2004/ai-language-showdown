@@ -39,7 +39,7 @@ function matchValuesFor(question: RawQuestion): number[] {
   const hexPaired = answers.some((item) => /^0x/i.test(item));
 
   for (const raw of answers) {
-    if (/^0b[01]+$/i.test(raw) || /^[01]{4,}$/.test(raw)) {
+    if (/^0b[01]+$/i.test(raw) || (question.category !== "hex" && /^[01]{4,}$/.test(raw))) {
       values.add(parseInt(raw.replace(/^0b/i, ""), 2));
       continue;
     }
@@ -74,16 +74,23 @@ function matchValuesFor(question: RawQuestion): number[] {
 export function formatAnswerGlyph(
   answer: string,
   category: Encoding | "mixed",
+  promptText = "",
 ): string {
   const raw = answer.trim();
-  if (/^[01]{4,}$/.test(raw)) {
+  if (category === "hex") {
+    if (/^0x/i.test(raw)) return `0x${raw.slice(2).toUpperCase()}`;
+    const wantsHex =
+      /hexadecimal|in hexadecimal|in hex\b/i.test(promptText) &&
+      !/in decimal/i.test(promptText);
+    if (wantsHex && /^[0-9A-F]+$/i.test(raw)) {
+      return raw.length === 1 ? raw.toUpperCase() : `0x${raw.toUpperCase()}`;
+    }
+    if (/[A-F]/i.test(raw) && /^[0-9A-F]+$/i.test(raw)) {
+      return raw.length === 1 ? raw.toUpperCase() : `0x${raw.toUpperCase()}`;
+    }
+  }
+  if (/^[01]{4,}$/.test(raw) && category !== "hex") {
     return raw.replace(/(.{4})/g, "$1 ").trim();
-  }
-  if (category === "hex" && /^0x/i.test(raw)) {
-    return `0x${raw.slice(2).toUpperCase()}`;
-  }
-  if (category === "hex" && /^[0-9A-F]+$/i.test(raw) && /[A-F]/i.test(raw)) {
-    return raw.length === 1 ? raw.toUpperCase() : `0x${raw.toUpperCase()}`;
   }
   return raw;
 }
@@ -105,7 +112,11 @@ export function deriveExplanation(input: {
   const binInText = text.match(/\b([01]{4,16})\b/);
   const hexInText = text.match(/\b0x([0-9A-Fa-f]+)\b/i);
 
-  if (decimalMention && /^[01]+$/.test(answer)) {
+  if (category === "hex" && decimalMention) {
+    const glyph = formatAnswerGlyph(answer, "hex", text);
+    return `${decimalMention[1]} in decimal = ${glyph}`;
+  }
+  if (category === "binary" && decimalMention && /^[01]+$/.test(answer)) {
     return `${decimalMention[1]} in decimal = ${answer} in ${answer.length}-bit binary`;
   }
   if (binInText && /^\d+$/.test(answer) && /decimal/i.test(text)) {
@@ -126,13 +137,58 @@ export function deriveExplanation(input: {
   if (hexInText && /^\d+$/.test(answer)) {
     return `0x${hexInText[1].toUpperCase()} = ${answer} in decimal`;
   }
-  if (decimalMention && category === "hex") {
-    return `${decimalMention[1]} in decimal = ${formatAnswerGlyph(answer, "hex")}`;
-  }
   if (binInText && /^[A-Za-z]$/.test(answer)) {
     return `${binInText[1]} is letter ${answer.toUpperCase()} (A=00001)`;
   }
   return `${answer} is the ${category} reading for this prompt.`;
+}
+
+export function deriveHint(prompt: {
+  text: string;
+  category: string;
+  difficulty: string;
+}): string {
+  const text = prompt.text;
+  if (/hexadecimal|in hexadecimal/i.test(text)) {
+    return "Each hex place is a power of 16. Do not read those digits as binary lamps.";
+  }
+  if (/0x[0-9A-Fa-f]+/.test(text) && /decimal/i.test(text)) {
+    return "0x is base 16. A=10, B=11, C=12, D=13, E=14, F=15.";
+  }
+  if (/binary representation|bit binary/i.test(text)) {
+    return "Write the number in bits, then pad to the width the prompt names.";
+  }
+  if (/letter/i.test(text) && /[01]{4,}/.test(text)) {
+    return "A=00001, B=00010, and so on up the alphabet.";
+  }
+  if (/ASCII/i.test(text)) {
+    return "A is 65 / 0x41. Lowercase a is 97 / 0x61.";
+  }
+  return `This is a ${prompt.difficulty} ${prompt.category} read. Match the encoding on the card face.`;
+}
+
+export function explainFromCard(
+  prompt: PromptDef,
+  card: { glyph: string; value: number; encoding: string },
+): string {
+  const decimalMention = prompt.text.match(/decimal (\d+)/i);
+  if (prompt.category === "hex" && decimalMention) {
+    if (/hexadecimal|in hexadecimal|in hex\b/i.test(prompt.text)) {
+      return `${card.glyph} from your hand is the hex form of decimal ${decimalMention[1]}.`;
+    }
+    return `${card.glyph} from your hand reads as decimal ${card.value}.`;
+  }
+  if (prompt.category === "binary" && decimalMention) {
+    return `${card.glyph} from your hand is decimal ${decimalMention[1]} in binary.`;
+  }
+  if (prompt.category === "ascii") {
+    return `${card.glyph} from your hand is the ASCII match for this prompt.`;
+  }
+  const binInText = prompt.text.match(/\b([01]{4,16})\b/);
+  if (binInText && /^[A-Za-z]$/.test(prompt.answer)) {
+    return `${card.glyph} from your hand is letter ${prompt.answer.toUpperCase()} (A=00001).`;
+  }
+  return `${card.glyph} from your hand is the matching card (${prompt.explanation}).`;
 }
 
 function toPrompt(question: RawQuestion): PromptDef {
@@ -148,7 +204,11 @@ function toPrompt(question: RawQuestion): PromptDef {
     difficulty: asDifficulty(question.difficulty),
     matchValues: matchValuesFor(question),
     matchGlyphs: acceptedAnswers.map(normalizeAnswer),
-    hint: `${asDifficulty(question.difficulty)} ${question.category}`,
+    hint: deriveHint({
+      text: question.prompt,
+      category: question.category,
+      difficulty: asDifficulty(question.difficulty),
+    }),
     explanation:
       question.explanation?.trim() ||
       deriveExplanation({

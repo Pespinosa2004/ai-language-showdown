@@ -158,8 +158,9 @@ function HowToPlay() {
             <BookOpen className="mt-0.5 size-4 shrink-0 text-amber-300" />
             Play the card that answers the prompt. Easy = 5, medium = 10, hard =
             15. The timer is still on the felt: ≤15s ×2, ≤30s ×1.5, ≤60s ×1.25,
-            slower ×1. A wrong card shows the correct answer and a one-line
-            explanation before the next prompt.
+            slower ×1. Hard prompts get a longer clock. A wrong card shows the
+            matching card from your hand on the right, with a one-line why
+            underneath. A light-bulb hint can be used three times per table.
           </li>
           <li className="flex gap-2">
             <ShieldAlert className="mt-0.5 size-4 shrink-0 text-amber-300" />

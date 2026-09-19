@@ -70,14 +70,24 @@ export const BOTS: BotDef[] = [
 
 export const MAX_HEALTH = 3;
 export const HAND_SIZE = 7;
-export const BASE_TIMER_MS = 75_000;
-export const MIN_TIMER_MS = 75_000;
+export const HINTS_PER_SESSION = 3;
+export const TIMER_BY_DIFFICULTY = {
+  easy: 60_000,
+  medium: 90_000,
+  hard: 135_000,
+} as const;
+export const BASE_TIMER_MS = TIMER_BY_DIFFICULTY.medium;
+export const MIN_TIMER_MS = TIMER_BY_DIFFICULTY.easy;
 export const TIMER_STEP_MS = 0;
 export const BASE_ACCUSE_MS = 8_000;
 export const MIN_ACCUSE_MS = 4_000;
 
-export function roundTimerMs(round: number): number {
-  return Math.max(MIN_TIMER_MS, BASE_TIMER_MS - (round - 1) * TIMER_STEP_MS);
+export function roundTimerMs(
+  round: number,
+  difficulty: "easy" | "medium" | "hard" = "medium",
+): number {
+  void round;
+  return TIMER_BY_DIFFICULTY[difficulty] ?? TIMER_BY_DIFFICULTY.medium;
 }
 
 export function roundAccuseMs(round: number): number {

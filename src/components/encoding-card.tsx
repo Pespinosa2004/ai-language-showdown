@@ -37,20 +37,26 @@ export function EncodingCard({
       disabled={disabled}
       className={cn(
         "relative flex shrink-0 flex-col overflow-hidden rounded-xl border text-left shadow-[0_10px_24px_-12px_rgba(0,0,0,0.8)] transition-all",
-        compact ? "h-[168px] w-[118px] p-2.5" : "h-[236px] w-[164px] p-3",
-        card.encoding === "binary" &&
+        compact
+          ? "h-[132px] w-[90px] p-2 sm:h-[148px] sm:w-[102px] lg:h-[160px] lg:w-[110px]"
+          : "h-[236px] w-[164px] p-3",
+        (card.encoding ?? "binary") === "binary" &&
           "border-sky-400/30 bg-linear-to-b from-slate-800 to-slate-950",
         card.encoding === "hex" &&
           "border-teal-400/30 bg-linear-to-b from-teal-950 to-slate-950",
         card.encoding === "ascii" &&
           "border-fuchsia-400/30 bg-linear-to-b from-fuchsia-950 to-slate-950",
         selected &&
+          !compact &&
           "-translate-y-3 ring-2 ring-amber-300 ring-offset-2 ring-offset-[#123226]",
+        selected &&
+          compact &&
+          "ring-2 ring-amber-300 ring-offset-1 ring-offset-[#123226]",
         disabled && !selected && "opacity-60",
       )}
     >
       <div className="flex items-center justify-between gap-2 font-mono text-[10px] tracking-[0.18em] text-amber-200/80">
-        <span>{encodingLabel[card.encoding]}</span>
+        <span>{encodingLabel[card.encoding] ?? "CARD"}</span>
         <span className="text-amber-100/70">{rarityPips[card.rarity]}</span>
       </div>
       <div

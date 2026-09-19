@@ -1,13 +1,17 @@
 import assert from "node:assert/strict";
-import { HAND_SIZE } from "./bots";
+import { HAND_SIZE, HINTS_PER_SESSION } from "./bots";
 import {
   assertHandContainsCorrect,
   beginRound,
   cardShowsAnswer,
   createMatch,
   dealPlayerOptions,
+  playBot,
+  resolveRound,
+  spendHint,
+  timeoutHuman,
 } from "./engine";
-import { deriveExplanation } from "./questions";
+import { deriveExplanation, explainFromCard } from "./questions";
 import { PROMPTS } from "./catalog";
 
 const decimalTen = PROMPTS.find((prompt) => prompt.id === "hex-002");
@@ -71,6 +75,67 @@ const missing = {
 assert.throws(
   () => assertHandContainsCorrect(hexTenHand, missing),
   /missing from the 7 cards/,
+);
+
+const hexFourK = PROMPTS.find((prompt) => prompt.id === "hex-015");
+assert.ok(hexFourK);
+assert.equal(hexFourK.matchValues.length, 1);
+assert.equal(hexFourK.matchValues[0], 4096);
+assert.equal(hexFourK.explanation, "4096 in decimal = 0x1000");
+assert.doesNotMatch(hexFourK.explanation, /4-bit binary/);
+const hexFourKHand = dealPlayerOptions(hexFourK);
+assert.ok(
+  hexFourKHand.some(
+    (card) =>
+      card.encoding === "hex" &&
+      card.glyph.replace(/\s+/g, "").toUpperCase().replace(/^0X/, "0x") &&
+      /1000/i.test(card.glyph.replace(/\s+/g, "")),
+  ),
+  `hex-015 hand should show 1000/0x1000, got ${hexFourKHand.map((c) => c.glyph).join(", ")}`,
+);
+
+for (let i = 0; i < 20; i += 1) {
+  assert.doesNotThrow(() => beginRound(createMatch(`T${i}`, "local")));
+}
+
+const table = beginRound(createMatch("Crash", "local"));
+assert.equal(table.hintsRemaining, HINTS_PER_SESSION);
+assert.ok(table.correctCard);
+const once = spendHint(table);
+assert.equal(once.hintsRemaining, HINTS_PER_SESSION - 1);
+assert.equal(once.hintOpen, true);
+const closed = spendHint(once);
+assert.equal(closed.hintOpen, false);
+assert.equal(closed.hintsRemaining, HINTS_PER_SESSION - 1);
+let drained = closed;
+while (drained.hintsRemaining > 0) {
+  if (drained.hintOpen) drained = spendHint(drained);
+  drained = spendHint(drained);
+}
+assert.equal(drained.hintsRemaining, 0);
+assert.equal(spendHint({ ...drained, hintOpen: false }).hintsRemaining, 0);
+assert.doesNotThrow(() => playBot(table, "clippy"));
+assert.doesNotThrow(() =>
+  playBot(
+    {
+      ...table,
+      players: table.players.map((player) =>
+        player.id === "clippy" ? { ...player, hand: [] } : player,
+      ),
+    },
+    "clippy",
+  ),
+);
+assert.equal(resolveRound(table).phase, "prompting");
+assert.doesNotThrow(() => timeoutHuman(table));
+assert.ok(hexFourK);
+assert.match(
+  explainFromCard(hexFourK, {
+    glyph: "0x1000",
+    value: 4096,
+    encoding: "hex",
+  }),
+  /0x1000 from your hand is the hex form of decimal 4096/,
 );
 
 console.log(

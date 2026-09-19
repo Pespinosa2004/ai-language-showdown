@@ -14,6 +14,7 @@ import {
   selectCard,
   timeoutHuman,
   toggleAccuse,
+  spendHint,
   youPlayer,
 } from "@/lib/engine";
 import {
@@ -178,6 +179,9 @@ export function GameApp() {
         )
       }
       onQuit={() => setState(null)}
+      onHint={() =>
+        setState((current) => (current ? spendHint(current) : current))
+      }
     />
   );
 }
