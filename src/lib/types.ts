@@ -1,0 +1,91 @@
+export type Encoding = "binary" | "hex" | "ascii";
+export type Rarity = "common" | "uncommon" | "rare";
+export type MatchQuality = "exact" | "close" | "miss";
+export type Phase =
+  | "title"
+  | "dealing"
+  | "prompting"
+  | "accusing"
+  | "resolving"
+  | "gameover";
+
+export type CardDef = {
+  id: string;
+  encoding: Encoding;
+  glyph: string;
+  value: number;
+  name: string;
+  flavor: string;
+  rarity: Rarity;
+};
+
+export type PromptDef = {
+  id: string;
+  text: string;
+  answer: number;
+  category: Encoding | "mixed";
+  hint: string;
+};
+
+export type BotDef = {
+  id: string;
+  name: string;
+  title: string;
+  blurb: string;
+  specialty: Encoding;
+  accuracy: number;
+  notice: number;
+  panic: number;
+  speed: number;
+  offByOne: number;
+  accent: string;
+};
+
+export type SeatId = "you" | string;
+
+export type PlayerState = {
+  id: SeatId;
+  name: string;
+  isHuman: boolean;
+  health: number;
+  hand: CardDef[];
+  played: CardDef | null;
+  accused: boolean;
+  eliminated: boolean;
+};
+
+export type LogLine = {
+  id: string;
+  tone: "neutral" | "good" | "bad" | "warn";
+  text: string;
+};
+
+export type ScoreRow = {
+  id: string;
+  name: string;
+  won: boolean;
+  rounds: number;
+  health: number;
+  correctCalls: number;
+  falseCalls: number;
+  at: string;
+};
+
+export type GameState = {
+  phase: Phase;
+  playerName: string;
+  round: number;
+  prompt: PromptDef | null;
+  players: PlayerState[];
+  selectedCardId: string | null;
+  accusedIds: string[];
+  deadlineAt: number;
+  accuseDeadlineAt: number;
+  startedAt: number;
+  logs: LogLine[];
+  winnerId: SeatId | null;
+  correctCalls: number;
+  falseCalls: number;
+  storeLabel: string;
+  usedPromptIds: string[];
+};

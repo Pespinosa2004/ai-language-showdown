@@ -1,0 +1,9 @@
+{
+  "name": "last-bit-standing-module",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "spacetimedb": "^1.11.0"
+  }
+}
