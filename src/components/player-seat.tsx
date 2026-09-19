@@ -1,23 +1,57 @@
 "use client";
 
-import { Heart } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Heart, HeartCrack } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MAX_HEALTH } from "@/lib/bots";
 import { EncodingCard } from "@/components/encoding-card";
 import type { BotDef, Difficulty, MatchQuality, PlayerState } from "@/lib/types";
 
-export function HealthPips({ health, className }: { health: number; className?: string }) {
+export function HealthPips({
+  health,
+  className,
+}: {
+  health: number;
+  className?: string;
+}) {
+  const previous = useRef(health);
+  const [breaking, setBreaking] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (health < previous.current) {
+      const lost: number[] = [];
+      for (let index = health; index < previous.current; index += 1) {
+        lost.push(index);
+      }
+      setBreaking(lost);
+      const timer = window.setTimeout(() => setBreaking([]), 720);
+      previous.current = health;
+      return () => window.clearTimeout(timer);
+    }
+    previous.current = health;
+  }, [health]);
+
   return (
-    <div className={cn("flex items-center gap-0.5", className)} aria-label={`${health} of ${MAX_HEALTH} lives`}>
-      {Array.from({ length: MAX_HEALTH }).map((_, index) => (
-        <Heart
-          key={index}
-          className={cn(
-            "size-3.5",
-            index < health ? "fill-rose-400 text-rose-400" : "text-zinc-600",
-          )}
-        />
-      ))}
+    <div
+      className={cn("flex items-center gap-0.5", className)}
+      aria-label={`${health} of ${MAX_HEALTH} lives`}
+    >
+      {Array.from({ length: MAX_HEALTH }).map((_, index) => {
+        const filled = index < health;
+        const cracked = breaking.includes(index);
+        const Icon = cracked ? HeartCrack : Heart;
+        return (
+          <Icon
+            key={index}
+            className={cn(
+              "size-3.5",
+              cracked && "lbs-heart-break text-rose-300",
+              filled && !cracked && "fill-rose-400 text-rose-400",
+              !filled && !cracked && "text-zinc-600",
+            )}
+          />
+        );
+      })}
     </div>
   );
 }
@@ -39,6 +73,20 @@ export function PlayerSeat({
   canAccuse?: boolean;
   difficulty?: Difficulty | null;
 }) {
+  const wasEliminated = useRef(player?.eliminated ?? false);
+  const [shaking, setShaking] = useState(false);
+
+  useEffect(() => {
+    if (!player) return;
+    if (player.eliminated && !wasEliminated.current) {
+      setShaking(true);
+      const timer = window.setTimeout(() => setShaking(false), 900);
+      wasEliminated.current = true;
+      return () => window.clearTimeout(timer);
+    }
+    wasEliminated.current = player.eliminated;
+  }, [player]);
+
   if (!player) return null;
   const shown = player.eliminated
     ? player.lastPlayed ?? player.played
@@ -46,7 +94,12 @@ export function PlayerSeat({
   const allowAccuse = Boolean(canAccuse && !player.eliminated && player.played);
 
   return (
-    <div className="flex min-w-0 max-w-[110px] flex-col items-center gap-1.5 sm:max-w-[118px] sm:gap-2">
+    <div
+      className={cn(
+        "flex min-w-0 max-w-[110px] flex-col items-center gap-1.5 sm:max-w-[118px] sm:gap-2",
+        shaking && "lbs-eliminate",
+      )}
+    >
       <div
         className={cn(
           "flex w-full min-w-0 items-center gap-1 rounded-full border px-2 py-1 backdrop-blur-sm sm:px-2.5",

@@ -22,6 +22,10 @@ npm test   # proves every prompt's 7 cards include the bank answer
 
 Open [http://127.0.0.1:43123](http://127.0.0.1:43123).
 
+## Grok Voice
+
+The table announcer reads each prompt, calls eliminations (`ASCII 8 eliminated, 5 players remaining`), and says **You win** / **You lose**. Set `XAI_API_KEY` to use [xAI Grok TTS](https://docs.x.ai/developers/model-capabilities/audio/text-to-speech) (`eve` by default). With no key it uses the browser speech engine so the table still talks. Heart-break SFX is local Web Audio — Grok TTS is speech-only.
+
 ## Cards and scores (SpacetimeDB)
 
 The live game reads a **Spacetime-shaped catalog** of cards, prompts, and scores.

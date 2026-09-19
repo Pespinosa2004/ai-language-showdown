@@ -23,6 +23,7 @@ import {
   storeLabelFor,
   writeLocalScore,
 } from "@/lib/store";
+import { useTableVoice } from "@/components/use-table-voice";
 import type { GameState, ScoreRow } from "@/lib/types";
 
 export function GameApp() {
@@ -32,6 +33,7 @@ export function GameApp() {
   const [scores, setScores] = useState<ScoreRow[]>([]);
   const saved = useRef(false);
   const storeLabel = storeLabelFor(snapshot);
+  useTableVoice(state);
 
   useEffect(() => {
     const id = window.setTimeout(() => setScores(readLocalScores()), 0);

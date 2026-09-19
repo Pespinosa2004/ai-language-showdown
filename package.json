@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start --port 43123 --hostname 127.0.0.1",
     "lint": "eslint",
-    "test": "npx --yes tsx src/lib/deal.test.ts && npx --yes tsx src/lib/game.test.ts"
+    "test": "npx --yes tsx src/lib/deal.test.ts && npx --yes tsx src/lib/game.test.ts && npx --yes tsx src/lib/announce.test.ts"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

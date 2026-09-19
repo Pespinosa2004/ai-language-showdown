@@ -183,3 +183,53 @@
 .lbs-arcade {
   animation: lbs-arcade 1.15s ease-in-out infinite;
 }
+
+@keyframes lbs-heart-break {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: none;
+  }
+  30% {
+    transform: scale(1.45) rotate(-22deg);
+    filter: drop-shadow(0 0 6px rgb(251 113 133 / 80%));
+  }
+  55% {
+    transform: scale(0.82) rotate(14deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.55;
+  }
+}
+
+@keyframes lbs-eliminate {
+  0% {
+    transform: translateX(0) scale(1);
+    filter: none;
+  }
+  18% {
+    transform: translateX(-9px) rotate(-2.4deg) scale(1.05);
+  }
+  36% {
+    transform: translateX(9px) rotate(2.4deg);
+  }
+  54% {
+    transform: translateX(-6px) rotate(-1deg);
+  }
+  72% {
+    transform: translateX(5px);
+    filter: grayscale(0.35) brightness(0.78);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    filter: grayscale(0.55) brightness(0.62);
+  }
+}
+
+.lbs-heart-break {
+  animation: lbs-heart-break 0.7s ease-in-out;
+}
+
+.lbs-eliminate {
+  animation: lbs-eliminate 0.9s ease-in-out;
+}
