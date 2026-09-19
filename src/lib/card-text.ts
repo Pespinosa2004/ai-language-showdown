@@ -9,9 +9,9 @@ export function directTranslation(card: CardDef): string {
     return `${glyph} = ${card.value}`;
   }
   if (card.encoding === "hex") {
-    return `${glyph} = ${card.value} in decimal`;
+    return `${glyph} = ${card.value}`;
   }
-  return `${glyph} = ${card.value} in decimal`;
+  return `${glyph} = ${card.value}`;
 }
 
 export function cardCaption(

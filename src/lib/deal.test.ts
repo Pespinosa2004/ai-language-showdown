@@ -11,7 +11,12 @@ import {
   spendHint,
   timeoutHuman,
 } from "./engine";
-import { deriveExplanation, deriveHint, explainFromCard } from "./questions";
+import {
+  deriveExplanation,
+  deriveHint,
+  explainFromCard,
+  withSpacedEquals,
+} from "./questions";
 import { cardCaption, directTranslation } from "./card-text";
 import { CARDS, PROMPTS } from "./catalog";
 
@@ -146,6 +151,21 @@ const letterHint = deriveHint({
 });
 assert.match(letterHint, /A = 00001/);
 assert.doesNotMatch(letterHint, /A=00001/);
+assert.equal(withSpacedEquals("A=00001"), "A = 00001");
+assert.equal(withSpacedEquals("A = 00001, B=00010"), "A = 00001, B = 00010");
+
+for (const prompt of PROMPTS) {
+  assert.doesNotMatch(
+    prompt.hint,
+    /[^\s=]=[^=\s]/,
+    `${prompt.id} hint must space equals: ${prompt.hint}`,
+  );
+  assert.doesNotMatch(
+    prompt.explanation,
+    /[^\s=]=[^=\s]/,
+    `${prompt.id} explanation must space equals: ${prompt.explanation}`,
+  );
+}
 
 const asciiA = CARDS.find((card) => card.id === "ascii-65");
 assert.ok(asciiA);
@@ -153,6 +173,17 @@ assert.equal(directTranslation(asciiA), "A = 65 / 0x41");
 assert.equal(cardCaption(asciiA, "easy"), "A = 65 / 0x41");
 assert.equal(cardCaption(asciiA, "medium"), asciiA.flavor);
 assert.equal(cardCaption(asciiA, "hard"), "");
+
+const hexTen = CARDS.find((card) => card.id === "hex-10");
+assert.ok(hexTen);
+assert.equal(directTranslation(hexTen), `${hexTen.glyph} = ${hexTen.value}`);
+assert.equal(cardCaption(hexTen, "easy"), `${hexTen.glyph} = ${hexTen.value}`);
+assert.equal(cardCaption(hexTen, "hard"), "");
+
+const anyBinary = CARDS.find((card) => card.encoding === "binary");
+assert.ok(anyBinary);
+assert.match(directTranslation(anyBinary), / = /);
+assert.equal(cardCaption(anyBinary, "hard"), "");
 
 console.log(
   `deal.test ok · ${PROMPTS.length} prompts × 3 deals, ${HAND_SIZE} cards each`,

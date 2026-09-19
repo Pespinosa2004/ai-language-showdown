@@ -77,6 +77,9 @@ export function TitleScreen({
             Sit at the table
           </Button>
           <HowToPlay />
+          <Button size="lg" variant="ghost" asChild>
+            <a href="#encoding-bench">Encoding bench</a>
+          </Button>
         </div>
       </section>
 
@@ -110,37 +113,49 @@ export function TitleScreen({
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <div className="min-w-[32rem]">
-              <div className="grid grid-cols-[minmax(7.5rem,1.3fr)_3.5rem_5rem_6rem_5rem] gap-x-3 px-1 font-mono text-[10px] tracking-wide text-zinc-600">
-                <span>Name</span>
-                <span>Result</span>
-                <span className="text-right">Pts</span>
-                <span className="text-right">Round</span>
-                <span className="text-right">Calls</span>
-              </div>
-              <ul className="mt-1 grid gap-1">
+            <table className="w-full min-w-[28rem] table-fixed border-collapse font-mono text-xs">
+              <thead>
+                <tr className="text-[10px] tracking-wide text-zinc-600">
+                  <th className="w-[40%] py-1 pr-3 text-left font-medium">
+                    Name
+                  </th>
+                  <th className="w-[14%] py-1 pr-3 text-left font-medium">
+                    Result
+                  </th>
+                  <th className="w-[15%] py-1 pr-3 text-right font-medium">
+                    Pts
+                  </th>
+                  <th className="w-[16%] py-1 pr-3 text-right font-medium">
+                    Round
+                  </th>
+                  <th className="w-[15%] py-1 text-right font-medium">
+                    Calls
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-400">
                 {scores.slice(0, 6).map((row) => (
-                  <li
-                    key={row.id}
-                    className="grid grid-cols-[minmax(7.5rem,1.3fr)_3.5rem_5rem_6rem_5rem] items-center gap-x-3 px-1 font-mono text-xs text-zinc-400"
-                  >
-                    <span className="truncate text-zinc-200" title={row.name}>
+                  <tr key={row.id}>
+                    <td
+                      className="max-w-0 truncate py-1 pr-3 text-zinc-200"
+                      title={row.name}
+                    >
                       {row.name}
-                    </span>
-                    <span>{row.won ? "won" : "fell"}</span>
-                    <span className="text-right tabular-nums">
-                      {row.score ?? 0} pts
-                    </span>
-                    <span className="text-right tabular-nums">
-                      round {row.rounds}
-                    </span>
-                    <span className="text-right tabular-nums">
-                      {row.correctCalls} calls
-                    </span>
-                  </li>
+                    </td>
+                    <td className="py-1 pr-3">{row.won ? "won" : "fell"}</td>
+                    <td className="py-1 pr-3 text-right tabular-nums">
+                      {row.score ?? 0}
+                    </td>
+                    <td className="py-1 pr-3 text-right tabular-nums">
+                      {row.rounds}
+                    </td>
+                    <td className="py-1 text-right tabular-nums">
+                      {row.correctCalls}
+                    </td>
+                  </tr>
                 ))}
-              </ul>
-            </div>
+              </tbody>
+            </table>
           </div>
         )}
         <p className="mt-3 font-mono text-[11px] text-zinc-600">
