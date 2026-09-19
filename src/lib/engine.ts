@@ -392,7 +392,7 @@ export function resolveRound(state: GameState): GameState {
         logs.push(
           line(
             "warn",
-            `${player.name}'s ${player.played.glyph} was wrong — and walked.`,
+            `${player.name}'s ${player.played.glyph} was wrong. You did not call them, so they keep that life.`,
           ),
         );
       }
