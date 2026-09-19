@@ -115,6 +115,7 @@ function seating(playerName: string): PlayerState[] {
     health: MAX_HEALTH,
     hand: [],
     played: null,
+    lastPlayed: null,
     accused: false,
     eliminated: false,
   };
@@ -125,6 +126,7 @@ function seating(playerName: string): PlayerState[] {
     health: MAX_HEALTH,
     hand: [] as CardDef[],
     played: null,
+    lastPlayed: null,
     accused: false,
     eliminated: false,
   }));
@@ -167,7 +169,13 @@ export function beginRound(state: GameState, now = Date.now()): GameState {
   const livingCount = state.players.filter((player) => !player.eliminated).length;
   const players = state.players.map((player) => {
     if (player.eliminated) {
-      return { ...player, hand: [], played: null, accused: false };
+      return {
+        ...player,
+        health: 0,
+        hand: [],
+        played: null,
+        accused: false,
+      };
     }
     const bot = BOTS.find((item) => item.id === player.id);
     const wantExact = player.isHuman
@@ -236,7 +244,7 @@ function enterAccuseIfReady(state: GameState, now = Date.now()): GameState {
       ...state.logs,
       line(
         "warn",
-        "Accuse window. Tap any AI play you think is a hallucination.",
+        "Call a wrong bot to take a life. A correct bot — or your own wrong card — costs you a life.",
       ),
     ],
   };
@@ -261,6 +269,7 @@ export function playHuman(state: GameState, cardId: string): GameState {
       ? {
           ...player,
           played: card,
+          lastPlayed: card,
           hand: player.hand.filter((item) => item.id !== cardId),
         }
       : player,
@@ -293,6 +302,7 @@ export function playBot(
       ? {
           ...item,
           played: card,
+          lastPlayed: card,
           hand: item.hand.filter((handCard) => handCard.id !== card.id),
         }
       : item,
@@ -332,6 +342,10 @@ export function toggleAccuse(state: GameState, botId: string): GameState {
   return { ...state, accusedIds };
 }
 
+function loseLife(player: PlayerState) {
+  player.health = Math.max(0, player.health - 1);
+}
+
 export function resolveRound(state: GameState): GameState {
   if (state.phase !== "accusing" || !state.prompt) return state;
   const prompt = state.prompt;
@@ -352,35 +366,20 @@ export function resolveRound(state: GameState): GameState {
         `Your ${you.played?.glyph} decodes to ${you.played?.value}. That matches.`,
       ),
     );
-  } else if (you.played) {
-    logs.push(
-      line(
-        "bad",
-        `Your ${you.played.glyph} is ${you.played.value}. The prompt wanted ${prompt.answer}.`,
-      ),
-    );
-  }
-
-  if (youQuality !== "exact" && !you.eliminated) {
-    const noticers = players.filter((player) => {
-      if (player.isHuman || player.eliminated) return false;
-      const bot = BOTS.find((item) => item.id === player.id);
-      if (!bot) return false;
-      const bonus = youQuality === "miss" ? 0.12 : 0;
-      return Math.random() < bot.notice + bonus;
-    });
-    if (noticers.length > 0) {
-      you.health -= 1;
+  } else {
+    if (you.played) {
       logs.push(
         line(
           "bad",
-          `${noticers[0]!.name} caught the error. You lose 1 health.`,
+          `Your ${you.played.glyph} is ${you.played.value}. The prompt wanted ${prompt.answer}.`,
         ),
       );
     } else {
-      logs.push(
-        line("warn", "Nobody called your bluff. The table lets it slide."),
-      );
+      logs.push(line("bad", "You never played a card."));
+    }
+    if (!you.eliminated) {
+      loseLife(you);
+      logs.push(line("bad", "Wrong answer. You lose 1 life."));
     }
   }
 
@@ -388,31 +387,33 @@ export function resolveRound(state: GameState): GameState {
     if (player.isHuman || player.eliminated || !player.played) continue;
     const quality = matchQuality(player.played, prompt);
     const accused = state.accusedIds.includes(player.id);
-    if (quality === "exact") {
-      if (accused) {
-        you.health -= 1;
-        falseCalls += 1;
+    if (!accused) {
+      if (quality !== "exact") {
         logs.push(
           line(
-            "bad",
-            `${player.name} was right (${player.played.glyph} = ${player.played.value}). False call. You lose 1 health.`,
+            "warn",
+            `${player.name}'s ${player.played.glyph} was wrong — and walked.`,
           ),
         );
       }
-    } else if (accused) {
-      player.health -= 1;
+      continue;
+    }
+    if (quality === "exact") {
+      loseLife(you);
+      falseCalls += 1;
+      logs.push(
+        line(
+          "bad",
+          `${player.name} was right (${player.played.glyph} = ${player.played.value}). False call. You lose 1 life.`,
+        ),
+      );
+    } else {
+      loseLife(player);
       correctCalls += 1;
       logs.push(
         line(
           "good",
-          `Hallucination. ${player.name} played ${player.played.glyph} (${player.played.value}). They lose 1 health.`,
-        ),
-      );
-    } else {
-      logs.push(
-        line(
-          "warn",
-          `${player.name}'s ${player.played.glyph} was wrong — and walked.`,
+          `Called. ${player.name} played ${player.played.glyph} (${player.played.value}). They lose 1 life.`,
         ),
       );
     }
@@ -422,29 +423,35 @@ export function resolveRound(state: GameState): GameState {
     if (player.health <= 0 && !player.eliminated) {
       player.health = 0;
       player.eliminated = true;
+      if (player.played) player.lastPlayed = player.played;
       logs.push(
         line(
           player.isHuman ? "bad" : "good",
-          `${player.name} is out of the table.`,
+          `${player.name} lost their last life and is blocked.`,
         ),
       );
     }
   }
 
   const livingBots = players.filter(
-    (player) => !player.isHuman && !player.eliminated,
+    (player) => !player.isHuman && player.health > 0 && !player.eliminated,
   );
   const youNow = players.find((player) => player.isHuman)!;
   let phase: GameState["phase"] = "resolving";
   let winnerId: string | null = null;
-  if (youNow.eliminated) {
+  if (youNow.health <= 0 || youNow.eliminated) {
     phase = "gameover";
     winnerId = livingBots[0]?.id ?? "table";
-    logs.push(line("bad", "You are not the last bit standing."));
+    logs.push(line("bad", "You are out of lives. The table holds."));
   } else if (livingBots.length === 0) {
     phase = "gameover";
     winnerId = "you";
-    logs.push(line("good", "Last bit standing. The table is yours."));
+    logs.push(
+      line(
+        "good",
+        "You still have a life. Every bot is out. Last bit standing.",
+      ),
+    );
   }
 
   return {

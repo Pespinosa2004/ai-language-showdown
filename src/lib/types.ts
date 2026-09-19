@@ -50,6 +50,7 @@ export type PlayerState = {
   health: number;
   hand: CardDef[];
   played: CardDef | null;
+  lastPlayed: CardDef | null;
   accused: boolean;
   eliminated: boolean;
 };

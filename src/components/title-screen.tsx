@@ -45,9 +45,9 @@ export function TitleScreen({
         </h1>
         <p className="max-w-2xl text-pretty text-base leading-7 text-zinc-300 sm:text-lg">
           Six players. Seven encoding cards. Each round a prompt hits the table
-          and you answer with binary, hex, or ASCII. The bots get faster. Call
-          their hallucinations, or they will call yours. Last player with
-          health wins.
+          and you answer with binary, hex, or ASCII. Call a wrong bot to take a
+          life. Play the wrong card, or call a right bot, and you lose one. You
+          win with at least one life after every bot is out.
         </p>
       </header>
 
@@ -159,13 +159,15 @@ function HowToPlay() {
           </li>
           <li className="flex gap-2">
             <ShieldAlert className="mt-0.5 size-4 shrink-0 text-amber-300" />
-            After the plays, tap any AI card you think is a hallucination. A
-            correct call costs them a heart. A false call costs you one. If you
-            are wrong and an AI notices, you lose a heart.
+            After the plays, tap any bot whose answer is wrong. That bot loses 1
+            of 3 lives. Tap a bot who was right, or play the wrong card
+            yourself, and you lose a life. Lives carry into the next round. A
+            bot at 0 stays on the felt, darkened, with their last play showing.
           </li>
           <li>
-            Everyone starts with 3 health. Each round the bots answer faster and
-            your timer shrinks. Last player standing wins.
+            Everyone starts with 3 lives. You win if you still have at least 1
+            life and every bot has lost all 3. Each round the bots answer faster
+            and your timer shrinks.
           </li>
         </ul>
       </DialogContent>

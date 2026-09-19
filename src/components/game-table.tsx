@@ -49,13 +49,13 @@ export function GameTable({
           </p>
           <p className="text-sm text-zinc-300">
             Round {state.round}
-            {state.phase === "accusing" ? " · accuse" : ""}
+            {state.phase === "accusing" ? " · call lives" : ""}
             {state.phase === "resolving" ? " · reveal" : ""}
           </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-zinc-400">You</span>
+            <span className="text-xs text-zinc-400">Your lives</span>
             <HealthPips health={you.health} />
           </div>
           <Button variant="ghost" size="sm" onClick={onQuit}>
@@ -82,7 +82,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "hexa")}
               accused={state.accusedIds.includes("hexa")}
               stamp={stampFor(state, "hexa")}
-              canAccuse={canAccuse}
+              canAccuse={canAccuse && !byId.hexa!.eliminated}
               onAccuse={() => onAccuse("hexa")}
             />
             <PlayerSeat
@@ -90,7 +90,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "clippy")}
               accused={state.accusedIds.includes("clippy")}
               stamp={stampFor(state, "clippy")}
-              canAccuse={canAccuse}
+              canAccuse={canAccuse && !byId.clippy!.eliminated}
               onAccuse={() => onAccuse("clippy")}
             />
             <PlayerSeat
@@ -98,7 +98,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "bitwise")}
               accused={state.accusedIds.includes("bitwise")}
               stamp={stampFor(state, "bitwise")}
-              canAccuse={canAccuse}
+              canAccuse={canAccuse && !byId.bitwise!.eliminated}
               onAccuse={() => onAccuse("bitwise")}
             />
           </div>
@@ -131,7 +131,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "ascii8")}
               accused={state.accusedIds.includes("ascii8")}
               stamp={stampFor(state, "ascii8")}
-              canAccuse={canAccuse}
+              canAccuse={canAccuse && !byId.ascii8!.eliminated}
               onAccuse={() => onAccuse("ascii8")}
             />
             <div className="hidden sm:block" />
@@ -140,7 +140,7 @@ export function GameTable({
               bot={BOTS.find((bot) => bot.id === "nullptr")}
               accused={state.accusedIds.includes("nullptr")}
               stamp={stampFor(state, "nullptr")}
-              canAccuse={canAccuse}
+              canAccuse={canAccuse && !byId.nullptr!.eliminated}
               onAccuse={() => onAccuse("nullptr")}
             />
           </div>
@@ -179,8 +179,8 @@ export function GameTable({
               </p>
               <p className="mt-2 text-lg text-zinc-50">
                 {state.winnerId === "you"
-                  ? "Last bit standing. You outlasted the models."
-                  : "The models still hold the table."}
+                  ? "You still have a life. Every bot is out."
+                  : "You lost your last life. The models still hold the table."}
               </p>
               <Button className="mt-3" onClick={onQuit}>
                 {state.winnerId === "you" ? "Take the win" : "Try another table"}
@@ -203,7 +203,7 @@ export function GameTable({
           {you.hand.length === 0 ? (
             <p className="text-sm text-zinc-500">
               {you.played
-                ? "Card is on the table. Watch the bots, then accuse."
+                ? "Card is on the table. Call a wrong bot to take a life."
                 : "No cards left in hand."}
             </p>
           ) : (
@@ -228,8 +228,9 @@ export function GameTable({
 }
 
 function stampFor(state: GameState, id: string) {
-  if (state.phase !== "resolving" && state.phase !== "gameover") return null;
   const player = state.players.find((item) => item.id === id);
-  if (!player?.played || !state.prompt) return null;
+  if (!player || player.eliminated) return null;
+  if (state.phase !== "resolving" && state.phase !== "gameover") return null;
+  if (!player.played || !state.prompt) return null;
   return matchQuality(player.played, state.prompt);
 }
