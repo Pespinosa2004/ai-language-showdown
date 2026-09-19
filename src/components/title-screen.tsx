@@ -45,9 +45,10 @@ export function TitleScreen({
         </h1>
         <p className="max-w-2xl text-pretty text-base leading-7 text-zinc-300 sm:text-lg">
           Six players. Seven encoding cards. Each round a prompt hits the table
-          and you answer with binary, hex, or ASCII. Call a wrong bot to take a
-          life. Play the wrong card, or call a right bot, and you lose one. You
-          win with at least one life after every bot is out.
+          and you answer with binary, hex, or ASCII. The clock is a score
+          multiplier, not a life drain. Call a wrong bot to take a life. Play
+          the wrong card, or call a right bot, and you lose one. You win with at
+          least one life after every bot is out.
         </p>
       </header>
 
@@ -115,6 +116,7 @@ export function TitleScreen({
               >
                 <span className="text-zinc-200">{row.name}</span>
                 <span>{row.won ? "won" : "fell"}</span>
+                <span>{row.score ?? 0} pts</span>
                 <span>round {row.rounds}</span>
                 <span>{row.correctCalls} calls</span>
               </li>
@@ -154,8 +156,9 @@ function HowToPlay() {
           </li>
           <li className="flex gap-2">
             <BookOpen className="mt-0.5 size-4 shrink-0 text-amber-300" />
-            Play the card whose hidden value answers the prompt. Some cards are
-            closer than others — a nibble is not a byte.
+            Play the card that answers the prompt. Easy = 5, medium = 10, hard =
+            15. The timer is still on the felt: ≤15s ×2, ≤30s ×1.5, ≤60s ×1.25,
+            slower ×1. Wrong answers score nothing.
           </li>
           <li className="flex gap-2">
             <ShieldAlert className="mt-0.5 size-4 shrink-0 text-amber-300" />
@@ -166,8 +169,8 @@ function HowToPlay() {
           </li>
           <li>
             Everyone starts with 3 lives. You win if you still have at least 1
-            life and every bot has lost all 3. Each round the bots answer faster
-            and your timer shrinks.
+            life and every bot has lost all 3. The clock no longer costs a life
+            — it only changes how many points a correct card is worth.
           </li>
         </ul>
       </DialogContent>

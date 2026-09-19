@@ -1,4 +1,5 @@
 export type Encoding = "binary" | "hex" | "ascii";
+export type Difficulty = "easy" | "medium" | "hard";
 export type Rarity = "common" | "uncommon" | "rare";
 export type MatchQuality = "exact" | "close" | "miss";
 export type Phase =
@@ -22,8 +23,12 @@ export type CardDef = {
 export type PromptDef = {
   id: string;
   text: string;
-  answer: number;
+  answer: string;
+  acceptedAnswers: string[];
   category: Encoding | "mixed";
+  difficulty: Difficulty;
+  matchValues: number[];
+  matchGlyphs: string[];
   hint: string;
 };
 
@@ -67,6 +72,7 @@ export type ScoreRow = {
   won: boolean;
   rounds: number;
   health: number;
+  score: number;
   correctCalls: number;
   falseCalls: number;
   at: string;
@@ -87,6 +93,10 @@ export type GameState = {
   winnerId: SeatId | null;
   correctCalls: number;
   falseCalls: number;
+  score: number;
+  lastRoundPoints: number;
+  promptStartedAt: number;
+  answeredAt: number | null;
   storeLabel: string;
   usedPromptIds: string[];
 };

@@ -6,6 +6,8 @@ import {
   roundAccuseMs,
   roundTimerMs,
 } from "@/lib/bots";
+import { normalizeAnswer } from "@/lib/questions";
+import { basePoints, roundScore, speedMultiplier } from "@/lib/scoring";
 import type {
   BotDef,
   CardDef,
@@ -35,28 +37,35 @@ function line(tone: LogLine["tone"], text: string): LogLine {
 }
 
 export function isExactCard(card: CardDef, prompt: PromptDef): boolean {
-  if (card.value !== prompt.answer) return false;
-  if (prompt.category === "ascii") return true;
-  return card.encoding !== "ascii";
+  const glyph = normalizeAnswer(card.glyph);
+  const hexless = glyph.replace(/^0x/, "");
+  if (prompt.matchGlyphs.includes(glyph) || prompt.matchGlyphs.includes(hexless)) {
+    return true;
+  }
+  if (card.encoding === "ascii") {
+    const letter = card.glyph.trim().toLowerCase();
+    if (letter.length === 1 && prompt.matchGlyphs.includes(letter)) return true;
+  }
+  if (!prompt.matchValues.includes(card.value)) return false;
+  if (prompt.category === "ascii") {
+    return card.encoding === "ascii" || card.value > 31;
+  }
+  if (card.encoding === "ascii") {
+    return prompt.matchGlyphs.includes(card.glyph.trim().toLowerCase());
+  }
+  return true;
 }
 
 export function matchQuality(card: CardDef, prompt: PromptDef): MatchQuality {
   if (isExactCard(card, prompt)) return "exact";
-  const answer = prompt.answer;
-  if (card.value === answer && card.encoding === "ascii") return "close";
-  const digitCode =
-    String(answer).length <= 2 ? String(answer).charCodeAt(0) : -1;
-  if (
-    card.value === answer * 2 ||
-    card.value === Math.floor(answer / 2) ||
-    card.value === answer + 1 ||
-    card.value === answer - 1 ||
-    card.value === digitCode ||
-    (card.encoding === "ascii" && card.glyph === String(answer))
-  ) {
-    return "close";
-  }
-  return "miss";
+  const close = prompt.matchValues.some(
+    (value) =>
+      card.value === value + 1 ||
+      card.value === value - 1 ||
+      card.value === value * 2 ||
+      card.value === Math.floor(value / 2),
+  );
+  return close ? "close" : "miss";
 }
 
 function takeUnique(
@@ -155,6 +164,10 @@ export function createMatch(playerName: string, storeLabel: string): GameState {
     winnerId: null,
     correctCalls: 0,
     falseCalls: 0,
+    score: 0,
+    lastRoundPoints: 0,
+    promptStartedAt: 0,
+    answeredAt: null,
     storeLabel,
     usedPromptIds: [],
   };
@@ -198,12 +211,15 @@ export function beginRound(state: GameState, now = Date.now()): GameState {
     accusedIds: [],
     deadlineAt: now + roundTimerMs(state.round),
     accuseDeadlineAt: 0,
+    promptStartedAt: now,
+    answeredAt: null,
+    lastRoundPoints: 0,
     usedPromptIds:
       unused.length > 0 ? [...state.usedPromptIds, prompt.id] : [prompt.id],
     logs: [
       line(
         "neutral",
-        `Round ${state.round}. ${livingCount} still standing. Read the flavor, not the panic.`,
+        `Round ${state.round}. ${livingCount} still standing. ${prompt.difficulty.toUpperCase()} · ${basePoints(prompt.difficulty)} pts. Answer faster for a higher multiplier.`,
       ),
     ],
   };
@@ -278,6 +294,7 @@ export function playHuman(state: GameState, cardId: string): GameState {
     ...state,
     players,
     selectedCardId: null,
+    answeredAt: state.answeredAt ?? Date.now(),
     logs: [
       ...state.logs,
       line("neutral", `You slide ${card.glyph} onto the felt.`),
@@ -358,12 +375,18 @@ export function resolveRound(state: GameState): GameState {
   const players = state.players.map((player) => ({ ...player }));
   const you = players.find((player) => player.isHuman)!;
   const youQuality = you.played ? matchQuality(you.played, prompt) : "miss";
+  const elapsed = Math.max(
+    0,
+    (state.answeredAt ?? Date.now()) - (state.promptStartedAt || Date.now()),
+  );
+  const points = roundScore(prompt.difficulty, elapsed, youQuality === "exact");
+  const multiplier = speedMultiplier(elapsed);
 
   if (youQuality === "exact") {
     logs.push(
       line(
         "good",
-        `Your ${you.played?.glyph} decodes to ${you.played?.value}. That matches.`,
+        `Your ${you.played?.glyph} matches ${prompt.answer}. +${points} pts (${prompt.difficulty} ${basePoints(prompt.difficulty)} × ${multiplier} in ${(elapsed / 1000).toFixed(1)}s).`,
       ),
     );
   } else {
@@ -379,7 +402,7 @@ export function resolveRound(state: GameState): GameState {
     }
     if (!you.eliminated) {
       loseLife(you);
-      logs.push(line("bad", "Wrong answer. You lose 1 life."));
+      logs.push(line("bad", "Wrong answer. You lose 1 life. No points this round."));
     }
   }
 
@@ -442,14 +465,14 @@ export function resolveRound(state: GameState): GameState {
   if (youNow.health <= 0 || youNow.eliminated) {
     phase = "gameover";
     winnerId = livingBots[0]?.id ?? "table";
-    logs.push(line("bad", "You are out of lives. The table holds."));
+    logs.push(line("bad", `You are out of lives. Final score ${state.score + points}.`));
   } else if (livingBots.length === 0) {
     phase = "gameover";
     winnerId = "you";
     logs.push(
       line(
         "good",
-        "You still have a life. Every bot is out. Last bit standing.",
+        `You still have a life. Every bot is out. Final score ${state.score + points}.`,
       ),
     );
   }
@@ -462,6 +485,8 @@ export function resolveRound(state: GameState): GameState {
     winnerId,
     correctCalls,
     falseCalls,
+    score: state.score + points,
+    lastRoundPoints: points,
   };
 }
 

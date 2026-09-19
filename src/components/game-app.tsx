@@ -116,6 +116,7 @@ export function GameApp() {
       won: state.winnerId === "you",
       rounds: state.round,
       health: you.health,
+      score: state.score,
       correctCalls: state.correctCalls,
       falseCalls: state.falseCalls,
       at: new Date().toISOString(),

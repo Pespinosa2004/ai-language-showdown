@@ -5,6 +5,7 @@ import { EncodingCard } from "@/components/encoding-card";
 import { HealthPips, PlayerSeat } from "@/components/player-seat";
 import { Button } from "@/components/ui/button";
 import { matchQuality, youPlayer } from "@/lib/engine";
+import { basePoints, multiplierLabel, speedMultiplier } from "@/lib/scoring";
 import type { GameState } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,12 @@ export function GameTable({
   const prompt = state.prompt;
   const canPlay = state.phase === "prompting" && !you.played && Boolean(state.selectedCardId);
   const canAccuse = state.phase === "accusing";
+  const elapsed =
+    you.played && state.answeredAt
+      ? Math.max(0, state.answeredAt - state.promptStartedAt)
+      : Math.max(0, now - (state.promptStartedAt || now));
+  const liveMultiplier = multiplierLabel(elapsed);
+  const liveSpeed = speedMultiplier(elapsed);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -54,6 +61,12 @@ export function GameTable({
           </p>
         </div>
         <div className="flex items-center gap-4">
+          <div className="font-mono text-sm text-amber-200">
+            Score {state.score}
+            {state.lastRoundPoints > 0 && state.phase !== "prompting"
+              ? ` · +${state.lastRoundPoints}`
+              : ""}
+          </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-zinc-400">Your lives</span>
             <HealthPips health={you.health} />
@@ -68,7 +81,7 @@ export function GameTable({
         <div
           className={cn(
             "h-full transition-[width] duration-100",
-            ratio < 0.25 ? "bg-rose-400" : "bg-amber-300",
+            ratio < 0.2 ? "bg-rose-400" : liveSpeed >= 2 ? "bg-amber-300" : "bg-amber-400/80",
           )}
           style={{ width: `${ratio * 100}%` }}
         />
@@ -105,13 +118,18 @@ export function GameTable({
 
           <div className="mx-auto my-4 max-w-xl rounded-2xl border border-amber-200/20 bg-black/35 p-4 text-center backdrop-blur-sm">
             <p className="font-mono text-[10px] tracking-[0.22em] text-amber-200/70">
-              {state.phase === "dealing" ? "SHUFFLING" : "PROMPT"}
+              {state.phase === "dealing"
+                ? "SHUFFLING"
+                : prompt
+                  ? `${prompt.difficulty.toUpperCase()} · ${basePoints(prompt.difficulty)} PTS`
+                  : "PROMPT"}
             </p>
             <p className="mt-2 text-pretty text-lg font-medium text-zinc-50 sm:text-2xl">
               {prompt?.text ?? "The dealer is cutting the deck…"}
             </p>
             <p className="mt-2 font-mono text-sm text-amber-100">
               {Math.ceil(remain / 1000)}s
+              {state.phase === "prompting" ? ` · ${liveMultiplier}` : ""}
             </p>
             {you.played ? (
               <div className="mt-3 flex justify-center">
@@ -182,6 +200,7 @@ export function GameTable({
                   ? "You still have a life. Every bot is out."
                   : "You lost your last life. The models still hold the table."}
               </p>
+              <p className="mt-1 font-mono text-amber-200">Score {state.score}</p>
               <Button className="mt-3" onClick={onQuit}>
                 {state.winnerId === "you" ? "Take the win" : "Try another table"}
               </Button>

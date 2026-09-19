@@ -1,4 +1,5 @@
-import type { CardDef, Encoding, PromptDef, Rarity } from "./types";
+import type { CardDef, Encoding, Rarity } from "./types";
+import { PROMPTS } from "./questions";
 
 type Lore = {
   name: string;
@@ -356,223 +357,62 @@ function buildCards(): CardDef[] {
   return cards;
 }
 
-export const CARDS: CardDef[] = buildCards();
+function loreFor(value: number): Lore {
+  return (
+    VALUE_LORE[value] ?? {
+      name: `Register ${value}`,
+      flavor: "A quantity waiting to be read off the felt.",
+      rarity: value > 255 ? "rare" : "common",
+    }
+  );
+}
 
-export const PROMPTS: PromptDef[] = [
-  {
-    id: "bits-in-byte",
-    text: "How many bits live inside a single byte?",
-    answer: 8,
-    category: "binary",
-    hint: "Think of the classic width of one stored letter.",
-  },
-  {
-    id: "nibble",
-    text: "How many bits wide is a nibble?",
-    answer: 4,
-    category: "binary",
-    hint: "Half a byte. Also the width of one hex digit.",
-  },
-  {
-    id: "hex-digits",
-    text: "How many distinct glyphs does hexadecimal use before it loops?",
-    answer: 16,
-    category: "hex",
-    hint: "Count 0 through F.",
-  },
-  {
-    id: "ascii-a",
-    text: "What is the ASCII code for uppercase A?",
-    answer: 65,
-    category: "ascii",
-    hint: "The first capital on the wire.",
-  },
-  {
-    id: "ascii-a-lower",
-    text: "What is the ASCII code for lowercase a?",
-    answer: 97,
-    category: "ascii",
-    hint: "Same letter, indoor voice. Thirty-two above its capital.",
-  },
-  {
-    id: "ascii-space",
-    text: "What is the ASCII code for a space?",
-    answer: 32,
-    category: "ascii",
-    hint: "The gap between words, as a number.",
-  },
-  {
-    id: "ascii-zero",
-    text: "What is the ASCII code for the character 0, not the value zero?",
-    answer: 48,
-    category: "ascii",
-    hint: "The printed face of none.",
-  },
-  {
-    id: "max-byte",
-    text: "What is the largest unsigned value an 8-bit byte can hold?",
-    answer: 255,
-    category: "binary",
-    hint: "Every lamp on. No room left.",
-  },
-  {
-    id: "byte-values",
-    text: "How many distinct values can one 8-bit byte represent, counting zero?",
-    answer: 256,
-    category: "binary",
-    hint: "One more than the largest unsigned citizen.",
-  },
-  {
-    id: "signed-max",
-    text: "What is the largest value a signed 8-bit integer can hold?",
-    answer: 127,
-    category: "binary",
-    hint: "The last guest before the sign bit turns.",
-  },
-  {
-    id: "high-bit",
-    text: "What decimal value is the high bit of a byte worth?",
-    answer: 128,
-    category: "binary",
-    hint: "The first citizen of the upper half.",
-  },
-  {
-    id: "usa-states",
-    text: "How many states are in the United States?",
-    answer: 50,
-    category: "mixed",
-    hint: "A union count, not a protocol.",
-  },
-  {
-    id: "days-week",
-    text: "How many days are in a week?",
-    answer: 7,
-    category: "mixed",
-    hint: "A short cycle. One less than a classic byte.",
-  },
-  {
-    id: "hours-day",
-    text: "How many hours are in a day?",
-    answer: 24,
-    category: "mixed",
-    hint: "A full clock face, twice twelve.",
-  },
-  {
-    id: "months",
-    text: "How many months are in a year?",
-    answer: 12,
-    category: "mixed",
-    hint: "Slices of an earth lap.",
-  },
-  {
-    id: "http-ok",
-    text: "What HTTP status means the request succeeded?",
-    answer: 200,
-    category: "mixed",
-    hint: "A polite knock. The page agreed to come out.",
-  },
-  {
-    id: "http-missing",
-    text: "What HTTP status means the page was not found?",
-    answer: 404,
-    category: "mixed",
-    hint: "A hallway with no door.",
-  },
-  {
-    id: "kib",
-    text: "How many bytes are in a kibibyte (the real 'K' on old disk labels)?",
-    answer: 1024,
-    category: "binary",
-    hint: "Two raised to the tenth.",
-  },
-  {
-    id: "chess",
-    text: "How many squares are on a chessboard?",
-    answer: 64,
-    category: "mixed",
-    hint: "Eight by eight. Two to the sixth.",
-  },
-  {
-    id: "meaning",
-    text: "What number did a famous computer claim was the meaning of everything?",
-    answer: 42,
-    category: "mixed",
-    hint: "Deep Thought's punchline.",
-  },
-  {
-    id: "decimal-base",
-    text: "How many digits does the decimal system use?",
-    answer: 10,
-    category: "mixed",
-    hint: "A pair of hands.",
-  },
-  {
-    id: "binary-base",
-    text: "How many digits does the binary system use?",
-    answer: 2,
-    category: "binary",
-    hint: "On, or off. Company of two.",
-  },
-  {
-    id: "ascii-z",
-    text: "What is the ASCII code for uppercase Z?",
-    answer: 90,
-    category: "ascii",
-    hint: "The last shout in the capital row.",
-  },
-  {
-    id: "cr",
-    text: "What is the ASCII code for carriage return?",
-    answer: 13,
-    category: "ascii",
-    hint: "The hammer coming home.",
-  },
-  {
-    id: "lf",
-    text: "What is the ASCII code for line feed?",
-    answer: 10,
-    category: "ascii",
-    hint: "Paper advancing one row. Also a human radix if you are not careful.",
-  },
-  {
-    id: "nul",
-    text: "What is the ASCII code for the NUL terminator?",
-    answer: 0,
-    category: "ascii",
-    hint: "The quiet end of a C string.",
-  },
-  {
-    id: "continue",
-    text: "What HTTP status means 'continue' — keep going, nothing to see?",
-    answer: 100,
-    category: "mixed",
-    hint: "A tidy century.",
-  },
-  {
-    id: "minutes",
-    text: "How many seconds are in a minute?",
-    answer: 60,
-    category: "mixed",
-    hint: "The spine of a clock.",
-  },
-  {
-    id: "latin-letters",
-    text: "How many letters are in the English alphabet?",
-    answer: 26,
-    category: "mixed",
-    hint: "A latin line from start shout to last shout.",
-  },
-  {
-    id: "power-of-two-byte",
-    text: "Two to the eighth is the number of values in a byte. What is that power's result?",
-    answer: 256,
-    category: "binary",
-    hint: "A full eight-bit street, counting zero.",
-  },
-];
+function extraCardsFromPrompts(existing: CardDef[]): CardDef[] {
+  const seen = new Set(existing.map((item) => item.id));
+  const extras: CardDef[] = [];
+  const push = (next: CardDef) => {
+    if (seen.has(next.id)) return;
+    seen.add(next.id);
+    extras.push(next);
+  };
+  for (const prompt of PROMPTS) {
+    for (const value of prompt.matchValues) {
+      push(card("binary", value, loreFor(value)));
+      push(card("hex", value, loreFor(value)));
+    }
+    for (const glyph of prompt.matchGlyphs) {
+      if (glyph.length !== 1) continue;
+      const upper = glyph.toUpperCase();
+      if (/[A-Z]/.test(upper)) {
+        push(
+          card("ascii", upper.charCodeAt(0), {
+            name: `Capital ${upper}`,
+            flavor:
+              "A single letter waiting to be decoded from the lamps above it.",
+            rarity: "common",
+          }),
+        );
+      }
+      if (/[0-9]/.test(glyph)) {
+        push(
+          card("ascii", glyph.charCodeAt(0), {
+            name: `Digit ${glyph}`,
+            flavor: "A keypad face, not always the number it names.",
+            rarity: "common",
+          }),
+        );
+      }
+    }
+  }
+  return extras;
+}
+
+const BASE_CARDS = buildCards();
+export const CARDS: CardDef[] = [...BASE_CARDS, ...extraCardsFromPrompts(BASE_CARDS)];
+export { PROMPTS };
 
 export function cardsByValue(value: number): CardDef[] {
-  return CARDS.filter((card) => card.value === value);
+  return CARDS.filter((item) => item.value === value);
 }
 
 export function catalogStats() {
@@ -580,9 +420,9 @@ export function catalogStats() {
     cards: CARDS.length,
     prompts: PROMPTS.length,
     encodings: {
-      binary: CARDS.filter((c) => c.encoding === "binary").length,
-      hex: CARDS.filter((c) => c.encoding === "hex").length,
-      ascii: CARDS.filter((c) => c.encoding === "ascii").length,
+      binary: CARDS.filter((item) => item.encoding === "binary").length,
+      hex: CARDS.filter((item) => item.encoding === "hex").length,
+      ascii: CARDS.filter((item) => item.encoding === "ascii").length,
     },
   };
 }

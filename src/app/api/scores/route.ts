@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     won: Boolean(body.won),
     rounds: Number(body.rounds) || 1,
     health: Number(body.health) || 0,
+    score: Number(body.score) || 0,
     correctCalls: Number(body.correctCalls) || 0,
     falseCalls: Number(body.falseCalls) || 0,
     at: body.at || new Date().toISOString(),

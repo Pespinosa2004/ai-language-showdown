@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Last Bit Standing",
   description:
-    "A last-player-standing encoding card game. Answer binary, hex, and ASCII prompts, call wrong bots to take a life, and outlast five models.",
+    "A last-player-standing encoding card game. Play binary, hex, and ASCII cards for points on the clock, and call wrong bots to take a life.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

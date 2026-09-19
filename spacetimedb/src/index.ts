@@ -19,8 +19,9 @@ const prompt = table(
   {
     id: t.string().primaryKey(),
     text: t.string(),
-    answer: t.u32(),
+    answer: t.string(),
     category: t.string(),
+    difficulty: t.string(),
     hint: t.string(),
   },
 );
@@ -33,6 +34,7 @@ const score = table(
     won: t.bool(),
     rounds: t.u32(),
     health: t.u32(),
+    score: t.u32(),
     correctCalls: t.u32(),
     falseCalls: t.u32(),
     at: t.string(),
@@ -61,6 +63,7 @@ spacetimedb.init((ctx) => {
       text: row.text,
       answer: row.answer,
       category: row.category,
+      difficulty: row.difficulty,
       hint: row.hint,
     });
   }
@@ -73,6 +76,7 @@ export const record_score = spacetimedb.reducer(
     won: t.bool(),
     rounds: t.u32(),
     health: t.u32(),
+    score: t.u32(),
     correctCalls: t.u32(),
     falseCalls: t.u32(),
     at: t.string(),

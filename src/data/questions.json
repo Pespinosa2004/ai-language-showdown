@@ -1,0 +1,843 @@
+[
+  {
+    "id": "bin-001",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "What is 1010 in decimal?",
+    "answer": "10",
+    "accepted_answers": [
+      "10",
+      "ten"
+    ]
+  },
+  {
+    "id": "bin-002",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "What is the 4-bit binary representation of decimal 5?",
+    "answer": "0101",
+    "accepted_answers": [
+      "0101",
+      "0b0101"
+    ]
+  },
+  {
+    "id": "bin-003",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "What is 1111 in decimal (4-bit binary)?",
+    "answer": "15",
+    "accepted_answers": [
+      "15",
+      "fifteen"
+    ]
+  },
+  {
+    "id": "bin-004",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "What is the 4-bit binary representation of decimal 9?",
+    "answer": "1001",
+    "accepted_answers": [
+      "1001",
+      "0b1001"
+    ]
+  },
+  {
+    "id": "bin-005",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "What is 0110 in decimal?",
+    "answer": "6",
+    "accepted_answers": [
+      "6",
+      "six"
+    ]
+  },
+  {
+    "id": "bin-006",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "What is the 4-bit binary representation of decimal 12?",
+    "answer": "1100",
+    "accepted_answers": [
+      "1100",
+      "0b1100"
+    ]
+  },
+  {
+    "id": "bin-007",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "What is 0001 in decimal?",
+    "answer": "1",
+    "accepted_answers": [
+      "1",
+      "one"
+    ]
+  },
+  {
+    "id": "bin-008",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "What is the 8-bit binary representation of decimal 200?",
+    "answer": "11001000",
+    "accepted_answers": [
+      "11001000",
+      "0b11001000"
+    ]
+  },
+  {
+    "id": "bin-009",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "What is 01011010 in decimal (8-bit binary)?",
+    "answer": "90",
+    "accepted_answers": [
+      "90"
+    ]
+  },
+  {
+    "id": "bin-010",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "What is the 8-bit binary representation of decimal 37?",
+    "answer": "00100101",
+    "accepted_answers": [
+      "00100101",
+      "0b00100101"
+    ]
+  },
+  {
+    "id": "bin-011",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "What is 11110000 in decimal (8-bit binary)?",
+    "answer": "240",
+    "accepted_answers": [
+      "240"
+    ]
+  },
+  {
+    "id": "bin-012",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "What is the 8-bit binary representation of decimal 128?",
+    "answer": "10000000",
+    "accepted_answers": [
+      "10000000",
+      "0b10000000"
+    ]
+  },
+  {
+    "id": "bin-013",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "What is 00001111 in decimal (8-bit binary)?",
+    "answer": "15",
+    "accepted_answers": [
+      "15"
+    ]
+  },
+  {
+    "id": "bin-014",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "What is the 8-bit binary representation of decimal 255?",
+    "answer": "11111111",
+    "accepted_answers": [
+      "11111111",
+      "0b11111111"
+    ]
+  },
+  {
+    "id": "bin-015",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "What is the 16-bit binary representation of decimal 1000?",
+    "answer": "0000001111101000",
+    "accepted_answers": [
+      "0000001111101000",
+      "0b0000001111101000"
+    ]
+  },
+  {
+    "id": "bin-016",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "What is 0000110010101010 in decimal (16-bit binary)?",
+    "answer": "3242",
+    "accepted_answers": [
+      "3242"
+    ]
+  },
+  {
+    "id": "bin-017",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "What is the 16-bit binary representation of decimal 4096?",
+    "answer": "0001000000000000",
+    "accepted_answers": [
+      "0001000000000000",
+      "0b0001000000000000"
+    ]
+  },
+  {
+    "id": "hex-001",
+    "category": "hex",
+    "difficulty": "easy",
+    "prompt": "What is 0xF in decimal?",
+    "answer": "15",
+    "accepted_answers": [
+      "15",
+      "fifteen"
+    ]
+  },
+  {
+    "id": "hex-002",
+    "category": "hex",
+    "difficulty": "easy",
+    "prompt": "What is 0xA in decimal?",
+    "answer": "10",
+    "accepted_answers": [
+      "10",
+      "ten"
+    ]
+  },
+  {
+    "id": "hex-003",
+    "category": "hex",
+    "difficulty": "easy",
+    "prompt": "What is decimal 12 in hexadecimal (single digit)?",
+    "answer": "C",
+    "accepted_answers": [
+      "C",
+      "c",
+      "0xC",
+      "0xc"
+    ]
+  },
+  {
+    "id": "hex-004",
+    "category": "hex",
+    "difficulty": "easy",
+    "prompt": "What is 0x9 in decimal?",
+    "answer": "9",
+    "accepted_answers": [
+      "9",
+      "nine"
+    ]
+  },
+  {
+    "id": "hex-005",
+    "category": "hex",
+    "difficulty": "easy",
+    "prompt": "What is decimal 15 in hexadecimal (single digit)?",
+    "answer": "F",
+    "accepted_answers": [
+      "F",
+      "f",
+      "0xF",
+      "0xf"
+    ]
+  },
+  {
+    "id": "hex-006",
+    "category": "hex",
+    "difficulty": "easy",
+    "prompt": "What is 0xE in decimal?",
+    "answer": "14",
+    "accepted_answers": [
+      "14",
+      "fourteen"
+    ]
+  },
+  {
+    "id": "hex-007",
+    "category": "hex",
+    "difficulty": "easy",
+    "prompt": "What is decimal 7 in hexadecimal (single digit)?",
+    "answer": "7",
+    "accepted_answers": [
+      "7",
+      "0x7"
+    ]
+  },
+  {
+    "id": "hex-008",
+    "category": "hex",
+    "difficulty": "medium",
+    "prompt": "Convert the byte 11110000 to hexadecimal.",
+    "answer": "F0",
+    "accepted_answers": [
+      "F0",
+      "f0",
+      "0xF0",
+      "0xf0"
+    ]
+  },
+  {
+    "id": "hex-009",
+    "category": "hex",
+    "difficulty": "medium",
+    "prompt": "What is 0x4A in decimal?",
+    "answer": "74",
+    "accepted_answers": [
+      "74"
+    ]
+  },
+  {
+    "id": "hex-010",
+    "category": "hex",
+    "difficulty": "medium",
+    "prompt": "What is the 2-digit hexadecimal representation of decimal 200?",
+    "answer": "C8",
+    "accepted_answers": [
+      "C8",
+      "c8",
+      "0xC8",
+      "0xc8"
+    ]
+  },
+  {
+    "id": "hex-011",
+    "category": "hex",
+    "difficulty": "medium",
+    "prompt": "Convert the byte 00101101 to hexadecimal.",
+    "answer": "2D",
+    "accepted_answers": [
+      "2D",
+      "2d",
+      "0x2D",
+      "0x2d"
+    ]
+  },
+  {
+    "id": "hex-012",
+    "category": "hex",
+    "difficulty": "medium",
+    "prompt": "What is 0x7F in decimal?",
+    "answer": "127",
+    "accepted_answers": [
+      "127"
+    ]
+  },
+  {
+    "id": "hex-013",
+    "category": "hex",
+    "difficulty": "medium",
+    "prompt": "What is the 2-digit hexadecimal representation of decimal 16?",
+    "answer": "10",
+    "accepted_answers": [
+      "10",
+      "0x10"
+    ]
+  },
+  {
+    "id": "hex-014",
+    "category": "hex",
+    "difficulty": "medium",
+    "prompt": "What is 0xFF in decimal?",
+    "answer": "255",
+    "accepted_answers": [
+      "255"
+    ]
+  },
+  {
+    "id": "hex-015",
+    "category": "hex",
+    "difficulty": "hard",
+    "prompt": "What is the 4-digit hexadecimal representation of decimal 4096?",
+    "answer": "1000",
+    "accepted_answers": [
+      "1000",
+      "0x1000"
+    ]
+  },
+  {
+    "id": "hex-016",
+    "category": "hex",
+    "difficulty": "hard",
+    "prompt": "What is 0xFFFF in decimal (4-digit hex)?",
+    "answer": "65535",
+    "accepted_answers": [
+      "65535"
+    ]
+  },
+  {
+    "id": "hex-017",
+    "category": "hex",
+    "difficulty": "hard",
+    "prompt": "Convert the 16-bit value 0x0CAA to decimal.",
+    "answer": "3242",
+    "accepted_answers": [
+      "3242"
+    ]
+  },
+  {
+    "id": "asc-001",
+    "category": "ascii",
+    "difficulty": "easy",
+    "prompt": "What character does ASCII code 65 represent?",
+    "answer": "A",
+    "accepted_answers": [
+      "A"
+    ]
+  },
+  {
+    "id": "asc-002",
+    "category": "ascii",
+    "difficulty": "easy",
+    "prompt": "What is the ASCII code for the character \"a\"?",
+    "answer": "97",
+    "accepted_answers": [
+      "97"
+    ]
+  },
+  {
+    "id": "asc-003",
+    "category": "ascii",
+    "difficulty": "easy",
+    "prompt": "What character does ASCII code 90 represent?",
+    "answer": "Z",
+    "accepted_answers": [
+      "Z"
+    ]
+  },
+  {
+    "id": "asc-004",
+    "category": "ascii",
+    "difficulty": "easy",
+    "prompt": "What is the ASCII code for the character \"Z\"?",
+    "answer": "90",
+    "accepted_answers": [
+      "90"
+    ]
+  },
+  {
+    "id": "asc-005",
+    "category": "ascii",
+    "difficulty": "easy",
+    "prompt": "What character does ASCII code 48 represent?",
+    "answer": "0",
+    "accepted_answers": [
+      "0",
+      "zero",
+      "digit 0"
+    ]
+  },
+  {
+    "id": "asc-006",
+    "category": "ascii",
+    "difficulty": "easy",
+    "prompt": "What is the ASCII code for the character \"e\"?",
+    "answer": "101",
+    "accepted_answers": [
+      "101"
+    ]
+  },
+  {
+    "id": "asc-007",
+    "category": "ascii",
+    "difficulty": "medium",
+    "prompt": "What is the 8-bit binary ASCII code for the letter \"a\"?",
+    "answer": "01100001",
+    "accepted_answers": [
+      "01100001",
+      "0b01100001"
+    ]
+  },
+  {
+    "id": "asc-008",
+    "category": "ascii",
+    "difficulty": "medium",
+    "prompt": "What is the hexadecimal ASCII code for the letter \"A\"?",
+    "answer": "41",
+    "accepted_answers": [
+      "41",
+      "0x41"
+    ]
+  },
+  {
+    "id": "asc-009",
+    "category": "ascii",
+    "difficulty": "medium",
+    "prompt": "What character does the 8-bit binary value 01000010 represent in ASCII?",
+    "answer": "B",
+    "accepted_answers": [
+      "B"
+    ]
+  },
+  {
+    "id": "asc-010",
+    "category": "ascii",
+    "difficulty": "medium",
+    "prompt": "What is the ASCII code (in decimal) for the character \"!\"?",
+    "answer": "33",
+    "accepted_answers": [
+      "33"
+    ]
+  },
+  {
+    "id": "asc-011",
+    "category": "ascii",
+    "difficulty": "medium",
+    "prompt": "What character does hex value 0x24 represent in ASCII?",
+    "answer": "$",
+    "accepted_answers": [
+      "$"
+    ]
+  },
+  {
+    "id": "asc-012",
+    "category": "ascii",
+    "difficulty": "medium",
+    "prompt": "What is the 8-bit binary ASCII code for the digit character \"5\"?",
+    "answer": "00110101",
+    "accepted_answers": [
+      "00110101",
+      "0b00110101"
+    ]
+  },
+  {
+    "id": "asc-013",
+    "category": "ascii",
+    "difficulty": "hard",
+    "prompt": "Convert the hex value 0x576F726C64 to its ASCII string.",
+    "answer": "World",
+    "accepted_answers": [
+      "World"
+    ]
+  },
+  {
+    "id": "asc-014",
+    "category": "ascii",
+    "difficulty": "hard",
+    "prompt": "What is the ASCII code (in decimal) for the character \"~\"?",
+    "answer": "126",
+    "accepted_answers": [
+      "126"
+    ]
+  },
+  {
+    "id": "asc-015",
+    "category": "ascii",
+    "difficulty": "hard",
+    "prompt": "What is the 4-character ASCII string represented by the hex bytes 0x4A617661?",
+    "answer": "Java",
+    "accepted_answers": [
+      "Java"
+    ]
+  },
+  {
+    "id": "asc-016",
+    "category": "ascii",
+    "difficulty": "hard",
+    "prompt": "What is the 8-bit binary ASCII code for the character \"?\"?",
+    "answer": "00111111",
+    "accepted_answers": [
+      "00111111",
+      "0b00111111"
+    ]
+  },
+  {
+    "id": "bin-letter-001",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "What letter does the binary sequence 00001 represent?",
+    "answer": "A",
+    "accepted_answers": [
+      "A",
+      "a",
+      "00001"
+    ]
+  },
+  {
+    "id": "bin-letter-002",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "Which letter is hiding inside the binary code 00010?",
+    "answer": "B",
+    "accepted_answers": [
+      "B",
+      "b",
+      "00010"
+    ]
+  },
+  {
+    "id": "bin-letter-003",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "Decode the binary sequence 00011 \u2014 what letter is it?",
+    "answer": "C",
+    "accepted_answers": [
+      "C",
+      "c",
+      "00011"
+    ]
+  },
+  {
+    "id": "bin-letter-004",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "If 00100 is written in binary, what letter does it spell out?",
+    "answer": "D",
+    "accepted_answers": [
+      "D",
+      "d",
+      "00100"
+    ]
+  },
+  {
+    "id": "bin-letter-005",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "Can you figure out which letter the binary 00101 stands for?",
+    "answer": "E",
+    "accepted_answers": [
+      "E",
+      "e",
+      "00101"
+    ]
+  },
+  {
+    "id": "bin-letter-006",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "What letter does the binary sequence 00110 represent?",
+    "answer": "F",
+    "accepted_answers": [
+      "F",
+      "f",
+      "00110"
+    ]
+  },
+  {
+    "id": "bin-letter-007",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "Which letter is hiding inside the binary code 00111?",
+    "answer": "G",
+    "accepted_answers": [
+      "G",
+      "g",
+      "00111"
+    ]
+  },
+  {
+    "id": "bin-letter-008",
+    "category": "binary",
+    "difficulty": "easy",
+    "prompt": "Decode the binary sequence 01000 \u2014 what letter is it?",
+    "answer": "H",
+    "accepted_answers": [
+      "H",
+      "h",
+      "01000"
+    ]
+  },
+  {
+    "id": "bin-letter-009",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "If 01001 is written in binary, what letter does it spell out?",
+    "answer": "I",
+    "accepted_answers": [
+      "I",
+      "i",
+      "01001"
+    ]
+  },
+  {
+    "id": "bin-letter-010",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "Can you figure out which letter the binary 01010 stands for?",
+    "answer": "J",
+    "accepted_answers": [
+      "J",
+      "j",
+      "01010"
+    ]
+  },
+  {
+    "id": "bin-letter-011",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "What letter does the binary sequence 01011 represent?",
+    "answer": "K",
+    "accepted_answers": [
+      "K",
+      "k",
+      "01011"
+    ]
+  },
+  {
+    "id": "bin-letter-012",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "Which letter is hiding inside the binary code 01100?",
+    "answer": "L",
+    "accepted_answers": [
+      "L",
+      "l",
+      "01100"
+    ]
+  },
+  {
+    "id": "bin-letter-013",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "Decode the binary sequence 01101 \u2014 what letter is it?",
+    "answer": "M",
+    "accepted_answers": [
+      "M",
+      "m",
+      "01101"
+    ]
+  },
+  {
+    "id": "bin-letter-014",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "If 01110 is written in binary, what letter does it spell out?",
+    "answer": "N",
+    "accepted_answers": [
+      "N",
+      "n",
+      "01110"
+    ]
+  },
+  {
+    "id": "bin-letter-015",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "Can you figure out which letter the binary 01111 stands for?",
+    "answer": "O",
+    "accepted_answers": [
+      "O",
+      "o",
+      "01111"
+    ]
+  },
+  {
+    "id": "bin-letter-016",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "What letter does the binary sequence 10000 represent?",
+    "answer": "P",
+    "accepted_answers": [
+      "P",
+      "p",
+      "10000"
+    ]
+  },
+  {
+    "id": "bin-letter-017",
+    "category": "binary",
+    "difficulty": "medium",
+    "prompt": "Which letter is hiding inside the binary code 10001?",
+    "answer": "Q",
+    "accepted_answers": [
+      "Q",
+      "q",
+      "10001"
+    ]
+  },
+  {
+    "id": "bin-letter-018",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "Decode the binary sequence 10010 \u2014 what letter is it?",
+    "answer": "R",
+    "accepted_answers": [
+      "R",
+      "r",
+      "10010"
+    ]
+  },
+  {
+    "id": "bin-letter-019",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "If 10011 is written in binary, what letter does it spell out?",
+    "answer": "S",
+    "accepted_answers": [
+      "S",
+      "s",
+      "10011"
+    ]
+  },
+  {
+    "id": "bin-letter-020",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "Can you figure out which letter the binary 10100 stands for?",
+    "answer": "T",
+    "accepted_answers": [
+      "T",
+      "t",
+      "10100"
+    ]
+  },
+  {
+    "id": "bin-letter-021",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "What letter does the binary sequence 10101 represent?",
+    "answer": "U",
+    "accepted_answers": [
+      "U",
+      "u",
+      "10101"
+    ]
+  },
+  {
+    "id": "bin-letter-022",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "Which letter is hiding inside the binary code 10110?",
+    "answer": "V",
+    "accepted_answers": [
+      "V",
+      "v",
+      "10110"
+    ]
+  },
+  {
+    "id": "bin-letter-023",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "Decode the binary sequence 10111 \u2014 what letter is it?",
+    "answer": "W",
+    "accepted_answers": [
+      "W",
+      "w",
+      "10111"
+    ]
+  },
+  {
+    "id": "bin-letter-024",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "If 11000 is written in binary, what letter does it spell out?",
+    "answer": "X",
+    "accepted_answers": [
+      "X",
+      "x",
+      "11000"
+    ]
+  },
+  {
+    "id": "bin-letter-025",
+    "category": "binary",
+    "difficulty": "hard",
+    "prompt": "Can you figure out which letter the binary 11001 stands for?",
+    "answer": "Y",
+    "accepted_answers": [
+      "Y",
+      "y",
+      "11001"
+    ]
+  }
+]

@@ -70,9 +70,9 @@ export const BOTS: BotDef[] = [
 
 export const MAX_HEALTH = 3;
 export const HAND_SIZE = 7;
-export const BASE_TIMER_MS = 24_000;
-export const MIN_TIMER_MS = 8_000;
-export const TIMER_STEP_MS = 2_200;
+export const BASE_TIMER_MS = 75_000;
+export const MIN_TIMER_MS = 75_000;
+export const TIMER_STEP_MS = 0;
 export const BASE_ACCUSE_MS = 8_000;
 export const MIN_ACCUSE_MS = 4_000;
 
