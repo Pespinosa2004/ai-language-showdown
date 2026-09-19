@@ -10,7 +10,7 @@ A last-player-standing card game about **binary, hex, and ASCII**. You sit at a 
 4. Your seven cards always include the bank answer plus six distractors. Exact encodings score. Near-misses are traps.
 5. After the plays, tap any bot whose answer is wrong. That bot loses 1 life. Tap a bot who was right, or play the wrong card yourself, and **you** lose 1 life. A miss shows the matching card from your hand plus a one-line why. Hard prompts get more clock (135s). The light bulb in the header gives **3 hints per table**. Wrong bots you skip keep their lives.
 6. A player at 0 lives stays on the felt, darkened, with their last play showing. You win with at least 1 life left after every bot is out.
-7. The clock does not cost a life. Correct answers score **easy 5 / medium 10 / hard 15**, times a speed multiplier: ≤15s ×2, ≤30s ×1.5, ≤60s ×1.25, slower ×1.
+7. The clock does not cost a life. Correct answers score **easy 5 / medium 10 / hard 15**, times a speed multiplier: ≤15s ×2, ≤30s ×1.5, ≤60s ×1.25, slower ×1. Card footnotes on easy rounds print a direct translation; medium keeps flavor; hard hides the line. The title page has an encoding bench with binary / hex / ASCII tables.
 
 ## Run locally
 

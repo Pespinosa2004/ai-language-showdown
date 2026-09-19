@@ -154,6 +154,7 @@ export function GameTable({
               accused={state.accusedIds.includes("hexa")}
               stamp={stampFor(state, "hexa")}
               canAccuse={canAccuse && !byId.hexa?.eliminated}
+              difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("hexa")}
             />
             <PlayerSeat
@@ -162,6 +163,7 @@ export function GameTable({
               accused={state.accusedIds.includes("clippy")}
               stamp={stampFor(state, "clippy")}
               canAccuse={canAccuse && !byId.clippy?.eliminated}
+              difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("clippy")}
             />
             <PlayerSeat
@@ -170,6 +172,7 @@ export function GameTable({
               accused={state.accusedIds.includes("bitwise")}
               stamp={stampFor(state, "bitwise")}
               canAccuse={canAccuse && !byId.bitwise?.eliminated}
+              difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("bitwise")}
             />
           </div>
@@ -211,6 +214,7 @@ export function GameTable({
               accused={state.accusedIds.includes("ascii8")}
               stamp={stampFor(state, "ascii8")}
               canAccuse={canAccuse && !byId.ascii8?.eliminated}
+              difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("ascii8")}
             />
             <div className="hidden sm:block" />
@@ -220,6 +224,7 @@ export function GameTable({
               accused={state.accusedIds.includes("nullptr")}
               stamp={stampFor(state, "nullptr")}
               canAccuse={canAccuse && !byId.nullptr?.eliminated}
+              difficulty={prompt?.difficulty}
               onAccuse={() => onAccuse("nullptr")}
             />
           </div>
@@ -293,6 +298,7 @@ export function GameTable({
                 card={card}
                 selected={state.selectedCardId === card.id}
                 disabled={state.phase !== "prompting" || Boolean(you.played)}
+                difficulty={prompt?.difficulty}
                 onClick={
                   state.phase === "prompting" && !you.played
                     ? () => onSelect(card.id)
@@ -362,6 +368,7 @@ function PlayReveal({
             card={played}
             compact
             selected
+            difficulty={prompt?.difficulty}
             stamped={revealing ? stampFor(state, "you") : null}
           />
         </div>
@@ -370,7 +377,12 @@ function PlayReveal({
             <p className="font-mono text-[10px] tracking-[0.18em] text-emerald-300/80">
               FROM YOUR HAND
             </p>
-            <EncodingCard card={correctCard} compact stamped="exact" />
+            <EncodingCard
+              card={correctCard}
+              compact
+              stamped="exact"
+              difficulty={prompt?.difficulty}
+            />
           </div>
         ) : null}
       </div>

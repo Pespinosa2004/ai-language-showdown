@@ -11,8 +11,9 @@ import {
   spendHint,
   timeoutHuman,
 } from "./engine";
-import { deriveExplanation, explainFromCard } from "./questions";
-import { PROMPTS } from "./catalog";
+import { deriveExplanation, deriveHint, explainFromCard } from "./questions";
+import { cardCaption, directTranslation } from "./card-text";
+import { CARDS, PROMPTS } from "./catalog";
 
 const decimalTen = PROMPTS.find((prompt) => prompt.id === "hex-002");
 assert.ok(decimalTen, "hex-002 should exist");
@@ -137,6 +138,21 @@ assert.match(
   }),
   /0x1000 from your hand is the hex form of decimal 4096/,
 );
+
+const letterHint = deriveHint({
+  text: "What letter does the binary sequence 00001 represent?",
+  category: "binary",
+  difficulty: "easy",
+});
+assert.match(letterHint, /A = 00001/);
+assert.doesNotMatch(letterHint, /A=00001/);
+
+const asciiA = CARDS.find((card) => card.id === "ascii-65");
+assert.ok(asciiA);
+assert.equal(directTranslation(asciiA), "A = 65 / 0x41");
+assert.equal(cardCaption(asciiA, "easy"), "A = 65 / 0x41");
+assert.equal(cardCaption(asciiA, "medium"), asciiA.flavor);
+assert.equal(cardCaption(asciiA, "hard"), "");
 
 console.log(
   `deal.test ok · ${PROMPTS.length} prompts × 3 deals, ${HAND_SIZE} cards each`,

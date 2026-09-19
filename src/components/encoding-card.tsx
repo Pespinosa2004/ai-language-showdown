@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { CardDef, MatchQuality } from "@/lib/types";
+import type { CardDef, Difficulty, MatchQuality } from "@/lib/types";
+import { cardCaption } from "@/lib/card-text";
 
 const encodingLabel = {
   binary: "BINARY",
@@ -21,6 +22,7 @@ export function EncodingCard({
   disabled = false,
   stamped,
   compact = false,
+  difficulty,
   onClick,
 }: {
   card: CardDef;
@@ -28,8 +30,10 @@ export function EncodingCard({
   disabled?: boolean;
   stamped?: MatchQuality | "accused" | null;
   compact?: boolean;
+  difficulty?: Difficulty | null;
   onClick?: () => void;
 }) {
+  const caption = cardCaption(card, difficulty);
   return (
     <button
       type="button"
@@ -78,14 +82,16 @@ export function EncodingCard({
         >
           {card.name}
         </p>
-        <p
-          className={cn(
-            "mt-1 text-pretty text-amber-100/70",
-            compact ? "line-clamp-3 text-[9px] leading-3" : "text-xs leading-4",
-          )}
-        >
-          {card.flavor}
-        </p>
+        {caption ? (
+          <p
+            className={cn(
+              "mt-1 text-pretty text-amber-100/70",
+              compact ? "line-clamp-3 text-[9px] leading-3" : "text-xs leading-4",
+            )}
+          >
+            {caption}
+          </p>
+        ) : null}
       </div>
       {stamped ? (
         <div

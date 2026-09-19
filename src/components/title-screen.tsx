@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { EncodingCard } from "@/components/encoding-card";
+import { EncodingPrimer } from "@/components/encoding-primer";
 import { CARDS } from "@/lib/catalog";
 import { BOTS } from "@/lib/bots";
 import type { ScoreRow } from "@/lib/types";
@@ -108,25 +109,46 @@ export function TitleScreen({
             No scores yet. Survive a table and your result lands here.
           </p>
         ) : (
-          <ul className="grid gap-2">
-            {scores.slice(0, 6).map((row) => (
-              <li
-                key={row.id}
-                className="flex flex-wrap items-center justify-between gap-2 font-mono text-xs text-zinc-400"
-              >
-                <span className="text-zinc-200">{row.name}</span>
-                <span>{row.won ? "won" : "fell"}</span>
-                <span>{row.score ?? 0} pts</span>
-                <span>round {row.rounds}</span>
-                <span>{row.correctCalls} calls</span>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-x-auto">
+            <div className="min-w-[32rem]">
+              <div className="grid grid-cols-[minmax(7.5rem,1.3fr)_3.5rem_5rem_6rem_5rem] gap-x-3 px-1 font-mono text-[10px] tracking-wide text-zinc-600">
+                <span>Name</span>
+                <span>Result</span>
+                <span className="text-right">Pts</span>
+                <span className="text-right">Round</span>
+                <span className="text-right">Calls</span>
+              </div>
+              <ul className="mt-1 grid gap-1">
+                {scores.slice(0, 6).map((row) => (
+                  <li
+                    key={row.id}
+                    className="grid grid-cols-[minmax(7.5rem,1.3fr)_3.5rem_5rem_6rem_5rem] items-center gap-x-3 px-1 font-mono text-xs text-zinc-400"
+                  >
+                    <span className="truncate text-zinc-200" title={row.name}>
+                      {row.name}
+                    </span>
+                    <span>{row.won ? "won" : "fell"}</span>
+                    <span className="text-right tabular-nums">
+                      {row.score ?? 0} pts
+                    </span>
+                    <span className="text-right tabular-nums">
+                      round {row.rounds}
+                    </span>
+                    <span className="text-right tabular-nums">
+                      {row.correctCalls} calls
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         )}
         <p className="mt-3 font-mono text-[11px] text-zinc-600">
           Card store: {storeLabel}
         </p>
       </section>
+
+      <EncodingPrimer />
     </div>
   );
 }
@@ -152,7 +174,8 @@ function HowToPlay() {
             <Binary className="mt-0.5 size-4 shrink-0 text-amber-300" />
             Each living player is dealt 7 cards. Yours always include the bank
             answer plus six distractors, then shuffled. The glyph on top is
-            binary, hex, or ASCII. The flavor text hints at the value.
+            binary, hex, or ASCII. Easy rounds print a direct translation on
+            the card foot. Medium keeps the flavor line. Hard hides it.
           </li>
           <li className="flex gap-2">
             <BookOpen className="mt-0.5 size-4 shrink-0 text-amber-300" />

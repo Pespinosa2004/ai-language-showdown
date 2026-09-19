@@ -39,7 +39,10 @@ function matchValuesFor(question: RawQuestion): number[] {
   const hexPaired = answers.some((item) => /^0x/i.test(item));
 
   for (const raw of answers) {
-    if (/^0b[01]+$/i.test(raw) || (question.category !== "hex" && /^[01]{4,}$/.test(raw))) {
+    if (
+      /^0b[01]+$/i.test(raw) ||
+      (question.category !== "hex" && /^[01]{4,}$/.test(raw))
+    ) {
       values.add(parseInt(raw.replace(/^0b/i, ""), 2));
       continue;
     }
@@ -138,7 +141,7 @@ export function deriveExplanation(input: {
     return `0x${hexInText[1].toUpperCase()} = ${answer} in decimal`;
   }
   if (binInText && /^[A-Za-z]$/.test(answer)) {
-    return `${binInText[1]} is letter ${answer.toUpperCase()} (A=00001)`;
+    return `${binInText[1]} is letter ${answer.toUpperCase()} (A = 00001)`;
   }
   return `${answer} is the ${category} reading for this prompt.`;
 }
@@ -153,16 +156,16 @@ export function deriveHint(prompt: {
     return "Each hex place is a power of 16. Do not read those digits as binary lamps.";
   }
   if (/0x[0-9A-Fa-f]+/.test(text) && /decimal/i.test(text)) {
-    return "0x is base 16. A=10, B=11, C=12, D=13, E=14, F=15.";
+    return "0x is base 16. A = 10, B = 11, C = 12, D = 13, E = 14, F = 15.";
   }
   if (/binary representation|bit binary/i.test(text)) {
     return "Write the number in bits, then pad to the width the prompt names.";
   }
   if (/letter/i.test(text) && /[01]{4,}/.test(text)) {
-    return "A=00001, B=00010, and so on up the alphabet.";
+    return "A = 00001, B = 00010, and so on up the alphabet.";
   }
   if (/ASCII/i.test(text)) {
-    return "A is 65 / 0x41. Lowercase a is 97 / 0x61.";
+    return "A = 65 / 0x41. Lowercase a = 97 / 0x61.";
   }
   return `This is a ${prompt.difficulty} ${prompt.category} read. Match the encoding on the card face.`;
 }
@@ -186,7 +189,7 @@ export function explainFromCard(
   }
   const binInText = prompt.text.match(/\b([01]{4,16})\b/);
   if (binInText && /^[A-Za-z]$/.test(prompt.answer)) {
-    return `${card.glyph} from your hand is letter ${prompt.answer.toUpperCase()} (A=00001).`;
+    return `${card.glyph} from your hand is letter ${prompt.answer.toUpperCase()} (A = 00001).`;
   }
   return `${card.glyph} from your hand is the matching card (${prompt.explanation}).`;
 }

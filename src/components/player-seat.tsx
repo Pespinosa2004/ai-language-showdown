@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MAX_HEALTH } from "@/lib/bots";
 import { EncodingCard } from "@/components/encoding-card";
-import type { BotDef, MatchQuality, PlayerState } from "@/lib/types";
+import type { BotDef, Difficulty, MatchQuality, PlayerState } from "@/lib/types";
 
 export function HealthPips({ health, className }: { health: number; className?: string }) {
   return (
@@ -29,6 +29,7 @@ export function PlayerSeat({
   accused,
   onAccuse,
   canAccuse,
+  difficulty,
 }: {
   player?: PlayerState;
   bot?: BotDef;
@@ -36,6 +37,7 @@ export function PlayerSeat({
   accused?: boolean;
   onAccuse?: () => void;
   canAccuse?: boolean;
+  difficulty?: Difficulty | null;
 }) {
   if (!player) return null;
   const shown = player.eliminated
@@ -86,6 +88,7 @@ export function PlayerSeat({
             <EncodingCard
               card={shown}
               compact
+              difficulty={difficulty}
               stamped={player.eliminated ? null : accused ? "accused" : stamp}
               disabled={!allowAccuse}
               onClick={allowAccuse ? onAccuse : undefined}
