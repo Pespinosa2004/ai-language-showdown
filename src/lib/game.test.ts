@@ -11,7 +11,7 @@ import {
   shiftOpenClocks,
   toggleAccuse,
 } from "./engine";
-import { roundScore } from "./scoring";
+import { rankScoreRows, roundScore } from "./scoring";
 import type { CardDef, GameState, PromptDef } from "./types";
 
 function hp(state: GameState, id: string): number {
@@ -296,5 +296,45 @@ const afterPlay = shiftOpenClocks(alreadyPlayed, 5_000);
 assert.equal(afterPlay.promptStartedAt, clock.promptStartedAt);
 assert.equal(afterPlay.deadlineAt, clock.deadlineAt + 5_000);
 assert.equal(afterPlay.accuseDeadlineAt, 2_005_000);
+
+const ranked = rankScoreRows([
+  {
+    id: "late-fall",
+    name: "HighFall",
+    won: false,
+    rounds: 12,
+    health: 0,
+    score: 900,
+    correctCalls: 8,
+    falseCalls: 0,
+    at: "2026-09-20T04:00:00.000Z",
+  },
+  {
+    id: "low-win",
+    name: "LowWin",
+    won: true,
+    rounds: 4,
+    health: 1,
+    score: 40,
+    correctCalls: 2,
+    falseCalls: 0,
+    at: "2026-09-20T04:01:00.000Z",
+  },
+  {
+    id: "high-win",
+    name: "HighWin",
+    won: true,
+    rounds: 8,
+    health: 2,
+    score: 120,
+    correctCalls: 4,
+    falseCalls: 0,
+    at: "2026-09-20T03:00:00.000Z",
+  },
+]);
+assert.deepEqual(
+  ranked.map((row) => row.id),
+  ["high-win", "low-win", "late-fall"],
+);
 
 console.log("game.test ok · lives, scores, accusations, letter answers");

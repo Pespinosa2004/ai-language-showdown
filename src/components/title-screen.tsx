@@ -22,10 +22,12 @@ export function TitleScreen({
   storeLabel,
   scores,
   onStart,
+  onResetScores,
 }: {
   storeLabel: string;
   scores: ScoreRow[];
   onStart: (name: string) => void;
+  onResetScores: () => void;
 }) {
   const [name, setName] = useState("Operator");
   const samples = useMemo(() => {
@@ -104,19 +106,36 @@ export function TitleScreen({
       </section>
 
       <section className="rounded-xl border border-white/10 bg-black/20 p-4">
-        <div className="mb-3 flex items-center gap-2 text-sm text-zinc-300">
-          <Trophy className="size-4 text-amber-300" />
-          Recent tables
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-sm text-zinc-300">
+            <Trophy className="size-4 text-amber-300" />
+            Leaderboard
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={scores.length === 0}
+            onClick={() => {
+              if (scores.length === 0) return;
+              if (!window.confirm("Clear every row on this leaderboard?")) return;
+              onResetScores();
+            }}
+          >
+            Reset board
+          </Button>
         </div>
         {scores.length === 0 ? (
           <p className="text-sm text-zinc-500">
-            No scores yet. Survive a table and your result lands here.
+            No scores yet. A win ranks above every fall, then higher points take
+            the top.
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="table-fixed border-collapse font-mono text-xs">
               <colgroup>
-                <col className="w-40" />
+                <col className="w-10" />
+                <col className="w-36" />
                 <col className="w-14" />
                 <col className="w-14" />
                 <col className="w-16" />
@@ -124,6 +143,7 @@ export function TitleScreen({
               </colgroup>
               <thead>
                 <tr className="text-[10px] tracking-wide text-zinc-600">
+                  <th className="py-1 pr-2 text-left font-medium">#</th>
                   <th className="py-1 pr-3 text-left font-medium">Name</th>
                   <th className="py-1 pr-3 text-left font-medium">Result</th>
                   <th className="py-1 pr-3 text-right font-medium">Pts</th>
@@ -132,15 +152,24 @@ export function TitleScreen({
                 </tr>
               </thead>
               <tbody className="text-zinc-400">
-                {scores.slice(0, 6).map((row) => (
+                {scores.slice(0, 10).map((row, index) => (
                   <tr key={row.id}>
+                    <td className="py-1 pr-2 tabular-nums text-zinc-500">
+                      {index + 1}
+                    </td>
                     <td
                       className="truncate py-1 pr-3 text-zinc-200"
                       title={row.name}
                     >
                       {row.name}
                     </td>
-                    <td className="py-1 pr-3">{row.won ? "won" : "fell"}</td>
+                    <td
+                      className={`py-1 pr-3 ${
+                        row.won ? "text-emerald-300" : "text-rose-300"
+                      }`}
+                    >
+                      {row.won ? "won" : "fell"}
+                    </td>
                     <td className="py-1 pr-3 text-right tabular-nums">
                       {row.score ?? 0}
                     </td>
@@ -157,6 +186,7 @@ export function TitleScreen({
           </div>
         )}
         <p className="mt-3 font-mono text-[11px] text-zinc-600">
+          Wins sit above falls. Then points, remaining lives, and rounds.
           Card store: {storeLabel}
         </p>
       </section>

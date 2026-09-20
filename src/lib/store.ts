@@ -1,4 +1,5 @@
 import { CARDS, catalogStats, PROMPTS } from "@/lib/catalog";
+import { rankScoreRows } from "@/lib/scoring";
 import type { CardDef, PromptDef, ScoreRow } from "@/lib/types";
 
 const SCORE_KEY = "last-bit-standing-scores";
@@ -44,16 +45,22 @@ export function readLocalScores(): ScoreRow[] {
     const raw = window.localStorage.getItem(SCORE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as ScoreRow[];
-    return Array.isArray(parsed) ? parsed : [];
+    return rankScoreRows(Array.isArray(parsed) ? parsed : []);
   } catch {
     return [];
   }
 }
 
 export function writeLocalScore(row: ScoreRow): ScoreRow[] {
-  const next = [row, ...readLocalScores()].slice(0, 20);
+  const next = rankScoreRows([row, ...readLocalScores()]).slice(0, 50);
   window.localStorage.setItem(SCORE_KEY, JSON.stringify(next));
   return next;
+}
+
+export function clearLocalScores(): ScoreRow[] {
+  if (typeof window === "undefined") return [];
+  window.localStorage.removeItem(SCORE_KEY);
+  return [];
 }
 
 export function storeLabelFor(snapshot: CatalogSnapshot): string {

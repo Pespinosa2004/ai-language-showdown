@@ -24,6 +24,7 @@ import {
   readLocalScores,
   storeLabelFor,
   writeLocalScore,
+  clearLocalScores,
 } from "@/lib/store";
 import { useTableVoice } from "@/components/use-table-voice";
 import type { GameState, ScoreRow } from "@/lib/types";
@@ -228,6 +229,10 @@ export function GameApp() {
       <TitleScreen
         storeLabel={storeLabel}
         scores={scores}
+        onResetScores={() => {
+          setScores(clearLocalScores());
+          void fetch("/api/scores", { method: "DELETE" });
+        }}
         onStart={(name) => {
           saved.current = false;
           helpOpenRef.current = false;

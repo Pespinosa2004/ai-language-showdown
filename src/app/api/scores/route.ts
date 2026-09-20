@@ -1,10 +1,15 @@
+import { rankScoreRows } from "@/lib/scoring";
 import type { ScoreRow } from "@/lib/types";
 
 const scores: ScoreRow[] = [];
 
+function board() {
+  return rankScoreRows(scores).slice(0, 50);
+}
+
 export async function GET() {
   return Response.json({
-    scores: scores.slice(0, 20),
+    scores: board(),
     persisted: "ephemeral-instance",
   });
 }
@@ -25,7 +30,14 @@ export async function POST(request: Request) {
     falseCalls: Number(body.falseCalls) || 0,
     at: body.at || new Date().toISOString(),
   };
-  scores.unshift(row);
-  if (scores.length > 50) scores.pop();
-  return Response.json({ ok: true, scores: scores.slice(0, 20) });
+  scores.push(row);
+  if (scores.length > 80) {
+    scores.splice(0, scores.length, ...board().slice(0, 50));
+  }
+  return Response.json({ ok: true, scores: board() });
+}
+
+export async function DELETE() {
+  scores.length = 0;
+  return Response.json({ ok: true, scores: [] });
 }
