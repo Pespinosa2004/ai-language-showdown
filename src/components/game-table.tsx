@@ -3,6 +3,7 @@
 import { Lightbulb } from "lucide-react";
 import { BOTS, HINTS_PER_SESSION, roundAccuseMs, roundTimerMs } from "@/lib/bots";
 import { EncodingCard } from "@/components/encoding-card";
+import { EncodingHelp } from "@/components/encoding-help";
 import { HealthPips, PlayerSeat } from "@/components/player-seat";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
 export function GameTable({
   state,
   now,
+  helpOpen,
   onSelect,
   onPlay,
   onAccuse,
@@ -22,9 +24,12 @@ export function GameTable({
   onNext,
   onQuit,
   onHint,
+  onOpenHelp,
+  onCloseHelp,
 }: {
   state: GameState;
   now: number;
+  helpOpen: boolean;
   onSelect: (cardId: string) => void;
   onPlay: () => void;
   onAccuse: (botId: string) => void;
@@ -32,6 +37,8 @@ export function GameTable({
   onNext: () => void;
   onQuit: () => void;
   onHint: () => void;
+  onOpenHelp: () => void;
+  onCloseHelp: () => void;
 }) {
   const you = youPlayer(state);
   const byId = Object.fromEntries(state.players.map((player) => [player.id, player]));
@@ -123,8 +130,38 @@ export function GameTable({
           <Button variant="ghost" size="sm" onClick={onQuit}>
             Leave table
           </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className={cn(
+                  "text-amber-200",
+                  helpOpen && "bg-white/10 text-amber-100",
+                )}
+                aria-label="Encoding help"
+                aria-expanded={helpOpen}
+                onClick={onOpenHelp}
+              >
+                <span className="font-mono text-base font-semibold leading-none">
+                  ?
+                </span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Binary, hex, octal, and ASCII help</TooltipContent>
+          </Tooltip>
         </div>
       </header>
+
+      <EncodingHelp
+        open={helpOpen}
+        heldSeconds={
+          state.phase === "prompting" || state.phase === "accusing"
+            ? Math.ceil(remain / 1000)
+            : null
+        }
+        onClose={onCloseHelp}
+      />
 
       {state.hintOpen && prompt ? (
         <div className="border-b border-amber-200/20 bg-amber-950/40 px-4 py-2 text-sm text-amber-100">

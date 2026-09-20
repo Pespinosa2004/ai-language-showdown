@@ -8,6 +8,7 @@ import {
   dealPlayerOptions,
   isExactCard,
   resolveRound,
+  shiftOpenClocks,
   toggleAccuse,
 } from "./engine";
 import { roundScore } from "./scoring";
@@ -274,5 +275,26 @@ const fourCalls = resolveRound(
 assert.equal(hp(fourCalls, "you"), 3);
 assert.equal(fourCalls.correctCallStreak, 0);
 assert.equal(fourCalls.correctCalls, 4);
+
+const clock = beginRound(createMatch("Pause", "local"), 1_000_000);
+assert.equal(clock.promptStartedAt, 1_000_000);
+const held = shiftOpenClocks(clock, 8_000);
+assert.equal(held.deadlineAt, clock.deadlineAt + 8_000);
+assert.equal(held.promptStartedAt, 1_008_000);
+assert.equal(held.accuseDeadlineAt, 0);
+assert.equal(shiftOpenClocks(clock, 0), clock);
+
+const alreadyPlayed = {
+  ...clock,
+  players: clock.players.map((player) =>
+    player.isHuman ? { ...player, played: player.hand[0] ?? null } : player,
+  ),
+  answeredAt: 1_003_000,
+  accuseDeadlineAt: 2_000_000,
+};
+const afterPlay = shiftOpenClocks(alreadyPlayed, 5_000);
+assert.equal(afterPlay.promptStartedAt, clock.promptStartedAt);
+assert.equal(afterPlay.deadlineAt, clock.deadlineAt + 5_000);
+assert.equal(afterPlay.accuseDeadlineAt, 2_005_000);
 
 console.log("game.test ok · lives, scores, accusations, letter answers");

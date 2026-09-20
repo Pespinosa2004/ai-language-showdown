@@ -161,23 +161,27 @@ export function deriveHint(prompt: {
 }): string {
   const text = prompt.text;
   if (/hexadecimal|in hexadecimal/i.test(text)) {
-    return "Each hex place is a power of 16. Do not read those digits as binary lamps.";
+    return withSpacedEquals(
+      "Hex counts 0–9, then A = 10, B = 11, up to F = 15. Do not read it as ordinary decimal.",
+    );
   }
   if (/0x[0-9A-Fa-f]+/.test(text) && /decimal/i.test(text)) {
     return withSpacedEquals(
-      "0x is base 16. A = 10, B = 11, C = 12, D = 13, E = 14, F = 15.",
+      "0x means hex, not decimal. A = 10, B = 11, C = 12, D = 13, E = 14, F = 15.",
     );
   }
   if (/binary representation|bit binary/i.test(text)) {
-    return "Write the number in bits, then pad to the width the prompt names.";
+    return "Write the number using only 0s and 1s. Add extra 0s on the left if the question asks for a certain length.";
   }
   if (/letter/i.test(text) && /[01]{4,}/.test(text)) {
     return withSpacedEquals("A = 00001, B = 00010, and so on up the alphabet.");
   }
   if (/ASCII/i.test(text)) {
-    return withSpacedEquals("A = 65 / 0x41. Lowercase a = 97 / 0x61.");
+    return withSpacedEquals(
+      "Computers store capital A as 65. Lowercase a is 97. Space is 32.",
+    );
   }
-  return `This is a ${prompt.difficulty} ${prompt.category} read. Match the encoding on the card face.`;
+  return "Read the question, then pick the card that matches it.";
 }
 
 export function explainFromCard(

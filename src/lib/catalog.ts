@@ -10,179 +10,157 @@ type Lore = {
 const VALUE_LORE: Record<number, Lore> = {
   0: {
     name: "Empty Register",
-    flavor:
-      "The absence a pointer dreams about when every lamp on the board is dark.",
+    flavor: "The number 0.",
     rarity: "uncommon",
   },
   1: {
     name: "Single Lamp",
-    flavor: "One switch thrown. The smallest truth a bit is willing to admit.",
+    flavor: "The number 1.",
     rarity: "common",
   },
   2: {
     name: "A Pair",
-    flavor: "The smallest crowd binary still bothers to call company.",
+    flavor: "The number 2.",
     rarity: "common",
   },
   3: {
     name: "Primary Crowd",
-    flavor:
-      "How many primary colors a painter packs, or states a trit would envy.",
+    flavor: "The number 3.",
     rarity: "common",
   },
   4: {
     name: "Nibble Width",
-    flavor:
-      "Half a byte — the exact width of one hex digit's worth of secrets.",
+    flavor: "The number 4.",
     rarity: "common",
   },
   7: {
     name: "Short Week",
-    flavor:
-      "Mornings a calendar sells you, or a byte that arrived one switch shy.",
+    flavor: "The number 7. Days in a week.",
     rarity: "common",
   },
   8: {
     name: "Beige Letter",
-    flavor:
-      "Count the little switches it takes to store one letter on a beige-era machine.",
+    flavor: "The number 8.",
     rarity: "common",
   },
   10: {
     name: "Human Radix",
-    flavor:
-      "Fingers on two hands, and the base your teacher never thought to question.",
+    flavor: "The number 10. Fingers on two hands.",
     rarity: "common",
   },
   12: {
     name: "Year Split",
-    flavor: "Slices a calendar carves from a trip around the lamp.",
+    flavor: "The number 12. Months in a year.",
     rarity: "common",
   },
   13: {
     name: "Carriage Home",
-    flavor: "The old type head coming home at the end of a spoken line.",
+    flavor: "The number 13.",
     rarity: "uncommon",
   },
   16: {
     name: "Hex Alphabet",
-    flavor:
-      "How many runes a hex priest needs before the glyphs start over.",
+    flavor: "The number 16.",
     rarity: "common",
   },
   24: {
     name: "Full Clock",
-    flavor:
-      "Hours a clock will sell you before it pretends yesterday never happened.",
+    flavor: "The number 24. Hours in a day.",
     rarity: "common",
   },
   26: {
     name: "Latin Line",
-    flavor: "Letters an English keyboard is willing to admit exist.",
+    flavor: "The number 26. Letters from A to Z.",
     rarity: "common",
   },
   32: {
     name: "Soft Gap",
-    flavor:
-      "The invisible width a teletype leaves between two spoken words.",
+    flavor: "The number 32. Also a space between words.",
     rarity: "uncommon",
   },
   42: {
     name: "Deep Thought",
-    flavor:
-      "The figure a tired machine once offered as the meaning of everything.",
+    flavor: "The number 42.",
     rarity: "rare",
   },
   48: {
     name: "Glyph None",
-    flavor:
-      "Not emptiness: the keypad character a clerk prints when they mean nothing.",
+    flavor: "The number 48. Also the written character 0.",
     rarity: "uncommon",
   },
   50: {
     name: "Union Count",
-    flavor:
-      "You will use this number to describe the amount of states in the United States.",
+    flavor: "The number 50. States in the United States.",
     rarity: "uncommon",
   },
   60: {
     name: "Minute Spine",
-    flavor: "Ticks a clock packs into a minute, or minutes into an hour.",
+    flavor: "The number 60. Seconds in a minute.",
     rarity: "common",
   },
   64: {
     name: "Chessboard",
-    flavor:
-      "Squares on a king's battlefield, or six powers of two stacked neatly.",
+    flavor: "The number 64. Squares on a chessboard.",
     rarity: "uncommon",
   },
   65: {
     name: "First Capital",
-    flavor:
-      "The first letter a schoolchild learns to shout down a serial cable.",
+    flavor: "The number 65. Capital letter A.",
     rarity: "uncommon",
   },
   90: {
     name: "Last Capital",
-    flavor: "The final shout in the Latin parade before the row goes quiet.",
+    flavor: "The number 90. Capital letter Z.",
     rarity: "uncommon",
   },
   97: {
     name: "Indoor Voice",
-    flavor: "The same first letter, but this time it kept its manners.",
+    flavor: "The number 97. Lowercase letter a.",
     rarity: "uncommon",
   },
   100: {
     name: "Tidy Century",
-    flavor:
-      "A round hundred, or the HTTP nod that says keep going, nothing to see.",
+    flavor: "The number 100.",
     rarity: "common",
   },
   127: {
     name: "Last Signed",
-    flavor:
-      "The final guest in a signed eight-bit house before the sign bit flips.",
+    flavor: "The number 127.",
     rarity: "rare",
   },
   128: {
     name: "High Bit",
-    flavor: "The first citizen of the upper half of a byte.",
+    flavor: "The number 128.",
     rarity: "uncommon",
   },
   200: {
     name: "Polite Knock",
-    flavor:
-      "The knock a web server uses when a page agrees to come out.",
+    flavor: "The number 200. A web page loaded fine.",
     rarity: "uncommon",
   },
   255: {
     name: "All Lamps",
-    flavor:
-      "Every switch thrown. The last unsigned name an eight-bit town can give.",
+    flavor: "The number 255.",
     rarity: "rare",
   },
   256: {
     name: "Full Street",
-    flavor:
-      "How many neighbors, counting zero, an eight-bit street can house.",
+    flavor: "The number 256.",
     rarity: "rare",
   },
   365: {
     name: "Earth Lap",
-    flavor:
-      "Trips the planet takes around the lamp before the calendar coughs.",
+    flavor: "The number 365. Days in a year.",
     rarity: "uncommon",
   },
   404: {
     name: "Missing Hall",
-    flavor:
-      "The hallway where a page goes when it would rather not be found.",
+    flavor: "The number 404. Page not found.",
     rarity: "rare",
   },
   1024: {
     name: "Real K",
-    flavor:
-      "Two to the tenth — what a nineties disk label meant by a single K.",
+    flavor: "The number 1024.",
     rarity: "rare",
   },
 };
@@ -190,94 +168,92 @@ const VALUE_LORE: Record<number, Lore> = {
 const ASCII_LORE: Record<number, Lore> = {
   0: {
     name: "NUL",
-    flavor: "The quiet terminator. A string's way of saying 'enough'.",
+    flavor: "A hidden stop. You cannot see it.",
     rarity: "uncommon",
   },
   7: {
     name: "BEL",
-    flavor: "The teletype's tiny shout — a bell, not a weekday.",
+    flavor: "An old bell sound. Not the number 7.",
     rarity: "uncommon",
   },
   9: {
     name: "TAB",
-    flavor: "A hop across the page, indenting a thought without a word.",
+    flavor: "Tab. Jumps text to the next indent.",
     rarity: "common",
   },
   10: {
     name: "Line Feed",
-    flavor: "Paper advancing one row, whether the carriage came home or not.",
+    flavor: "Starts a new line.",
     rarity: "uncommon",
   },
   13: {
     name: "Carriage Return",
-    flavor: "The hammer sliding back to the left margin, still on the same line.",
+    flavor: "Goes back to the start of the same line.",
     rarity: "uncommon",
   },
   27: {
     name: "Escape",
-    flavor: "The prefix that tells a terminal: what follows is a command.",
+    flavor: "The Escape key. Not a letter.",
     rarity: "rare",
   },
   32: {
     name: "Space",
-    flavor: "The gap you cannot see, without which words would collide.",
+    flavor: "A space. The blank gap between words.",
     rarity: "common",
   },
   33: {
     name: "Bang",
-    flavor: "A pointed shout at the end of a sentence, or a factorial in math class.",
+    flavor: "An exclamation mark: !",
     rarity: "common",
   },
   48: {
     name: "Digit None",
-    flavor: "The printed face of nothing — a circle, not an empty register.",
+    flavor: "The character 0, not the number 0.",
     rarity: "common",
   },
   49: {
     name: "Digit Unity",
-    flavor: "A single stroke a keypad uses when it means one, as a character.",
+    flavor: "The character 1, not the number 1.",
     rarity: "common",
   },
   50: {
     name: "Digit Pair",
-    flavor:
-      "The glyph for a pair — not the pair itself. A trap for the careless.",
+    flavor: "The character 2, not the number 2.",
     rarity: "uncommon",
   },
   52: {
     name: "Digit Nibble",
-    flavor: "The printed four. Easy to confuse with the nibble it merely names.",
+    flavor: "The character 4, not the number 4.",
     rarity: "uncommon",
   },
   55: {
     name: "Digit Week",
-    flavor: "The character a clock face uses for a week, not the week itself.",
+    flavor: "The character 7, not the number 7.",
     rarity: "uncommon",
   },
   56: {
     name: "Digit Byte",
-    flavor:
-      "Looks like a byte's width if you squint. It is only the drawing of it.",
+    flavor: "The character 8, not the number 8.",
     rarity: "uncommon",
   },
   65: {
     name: "Capital Open",
-    flavor: "The first shout in the Latin row — a peak and a crossbar.",
+    flavor: "The capital letter A.",
     rarity: "uncommon",
   },
   66: {
     name: "Capital Next",
-    flavor: "The second shout. Two bowls stacked like a humble fortress.",
+    flavor: "The capital letter B.",
     rarity: "common",
   },
   90: {
     name: "Capital Close",
-    flavor: "The last capital before the row goes quiet and the lowercase begins.",
+    flavor: "The capital letter Z.",
     rarity: "uncommon",
   },
   97: {
     name: "Quiet Open",
-    flavor: "The first lowercase. Same letter as the shout, indoor voice.",
+    flavor: "The lowercase letter a.",
     rarity: "uncommon",
   },
 };
@@ -361,7 +337,7 @@ function loreFor(value: number): Lore {
   return (
     VALUE_LORE[value] ?? {
       name: `Register ${value}`,
-      flavor: "A quantity waiting to be read off the felt.",
+      flavor: `The number ${value}.`,
       rarity: value > 255 ? "rare" : "common",
     }
   );
@@ -387,8 +363,7 @@ function extraCardsFromPrompts(existing: CardDef[]): CardDef[] {
         push(
           card("ascii", upper.charCodeAt(0), {
             name: `Capital ${upper}`,
-            flavor:
-              "A single letter waiting to be decoded from the lamps above it.",
+            flavor: `The capital letter ${upper}.`,
             rarity: "common",
           }),
         );
@@ -397,7 +372,7 @@ function extraCardsFromPrompts(existing: CardDef[]): CardDef[] {
         push(
           card("ascii", glyph.charCodeAt(0), {
             name: `Digit ${glyph}`,
-            flavor: "A keypad face, not always the number it names.",
+            flavor: `The character ${glyph}, not the number ${glyph}.`,
             rarity: "common",
           }),
         );

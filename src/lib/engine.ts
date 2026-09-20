@@ -295,7 +295,7 @@ export function dealPlayerOptions(
                 .trim(),
       value,
       name: `Near miss ${value}`,
-      flavor: "A neighboring quantity that is not the bank answer.",
+      flavor: "Nearby, but not the answer.",
       rarity: "common",
     });
   }
@@ -405,6 +405,24 @@ export function createMatch(playerName: string, storeLabel: string): GameState {
     storeLabel,
     usedPromptIds: [],
     correctCallStreak: 0,
+  };
+}
+
+export function shiftOpenClocks(state: GameState, deltaMs: number): GameState {
+  if (!Number.isFinite(deltaMs) || deltaMs <= 0) return state;
+  const you = youPlayer(state);
+  const stillOnClock = state.promptStartedAt > 0 && !you.played;
+  return {
+    ...state,
+    deadlineAt:
+      state.deadlineAt > 0 ? state.deadlineAt + deltaMs : state.deadlineAt,
+    accuseDeadlineAt:
+      state.accuseDeadlineAt > 0
+        ? state.accuseDeadlineAt + deltaMs
+        : state.accuseDeadlineAt,
+    promptStartedAt: stillOnClock
+      ? state.promptStartedAt + deltaMs
+      : state.promptStartedAt,
   };
 }
 

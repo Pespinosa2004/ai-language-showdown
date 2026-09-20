@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GameTable } from "@/components/game-table";
 import { TitleScreen } from "@/components/title-screen";
 import { aiDelayMs, BOTS } from "@/lib/bots";
@@ -12,6 +12,7 @@ import {
   playHuman,
   resolveRound,
   selectCard,
+  shiftOpenClocks,
   timeoutHuman,
   toggleAccuse,
   spendHint,
@@ -31,9 +32,57 @@ export function GameApp() {
   const [state, setState] = useState<GameState | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [scores, setScores] = useState<ScoreRow[]>([]);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [clockFreeze, setClockFreeze] = useState<number | null>(null);
   const saved = useRef(false);
+  const helpOpenRef = useRef(false);
+  const clockFreezeRef = useRef<number | null>(null);
   const storeLabel = storeLabelFor(snapshot);
-  useTableVoice(state);
+  const stopVoice = useTableVoice(state);
+
+  helpOpenRef.current = helpOpen;
+  if (helpOpen && clockFreeze != null) {
+    clockFreezeRef.current = clockFreeze;
+  }
+
+  const isPaused = () =>
+    helpOpenRef.current || clockFreezeRef.current != null;
+
+  const closeHelp = useCallback(() => {
+    const frozen = clockFreezeRef.current;
+    clockFreezeRef.current = null;
+    helpOpenRef.current = false;
+    setHelpOpen(false);
+    setClockFreeze(null);
+    if (frozen != null) {
+      const deltaMs = Math.max(0, Date.now() - frozen);
+      if (deltaMs > 0) {
+        setState((current) =>
+          current ? shiftOpenClocks(current, deltaMs) : current,
+        );
+      }
+    }
+    setNow(Date.now());
+  }, []);
+
+  const openHelp = useCallback(() => {
+    if (isPaused()) return;
+    const frozen = Date.now();
+    clockFreezeRef.current = frozen;
+    helpOpenRef.current = true;
+    setClockFreeze(frozen);
+    setNow(frozen);
+    setHelpOpen(true);
+  }, []);
+
+  const leaveTable = useCallback(() => {
+    stopVoice();
+    clockFreezeRef.current = null;
+    helpOpenRef.current = false;
+    setClockFreeze(null);
+    setHelpOpen(false);
+    setState(null);
+  }, [stopVoice]);
 
   useEffect(() => {
     const id = window.setTimeout(() => setScores(readLocalScores()), 0);
@@ -42,6 +91,7 @@ export function GameApp() {
 
   useEffect(() => {
     const id = window.setInterval(() => {
+      if (helpOpenRef.current || clockFreezeRef.current != null) return;
       const time = Date.now();
       setNow(time);
       setState((current) => {
@@ -68,30 +118,49 @@ export function GameApp() {
 
   useEffect(() => {
     if (state?.phase !== "dealing") return;
-    const id = window.setTimeout(() => {
-      setState((current) =>
-        current && current.phase === "dealing" ? beginRound(current) : current,
-      );
-    }, 700);
-    return () => window.clearTimeout(id);
+    let left = 700;
+    let last = Date.now();
+    const id = window.setInterval(() => {
+      const t = Date.now();
+      const dt = t - last;
+      last = t;
+      if (helpOpenRef.current || clockFreezeRef.current != null) return;
+      left -= dt;
+      if (left <= 0) {
+        window.clearInterval(id);
+        setState((current) =>
+          current && current.phase === "dealing" ? beginRound(current) : current,
+        );
+      }
+    }, 50);
+    return () => window.clearInterval(id);
   }, [state?.phase, state?.round]);
 
   useEffect(() => {
     if (state?.phase !== "prompting") return;
-    const timers: number[] = [];
+    const remaining = new Map<string, number>();
     for (const bot of BOTS) {
       const player = state.players.find((item) => item.id === bot.id);
       if (!player || player.eliminated || player.played) continue;
-      const delay = aiDelayMs(bot, state.round);
-      timers.push(
-        window.setTimeout(() => {
-          setState((current) => (current ? playBot(current, bot.id) : current));
-        }, delay),
-      );
+      remaining.set(bot.id, aiDelayMs(bot, state.round));
     }
-    return () => {
-      for (const timer of timers) window.clearTimeout(timer);
-    };
+    let last = Date.now();
+    const id = window.setInterval(() => {
+      const t = Date.now();
+      const wall = t - last;
+      last = t;
+      if (helpOpenRef.current || clockFreezeRef.current != null) return;
+      for (const [botId, left] of [...remaining]) {
+        const next = left - wall;
+        if (next <= 0) {
+          remaining.delete(botId);
+          setState((current) => (current ? playBot(current, botId) : current));
+        } else {
+          remaining.set(botId, next);
+        }
+      }
+    }, 80);
+    return () => window.clearInterval(id);
     // Players are snapshotted at the start of the prompting phase so later
     // plays do not reset the remaining bots' clocks.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,15 +168,24 @@ export function GameApp() {
 
   useEffect(() => {
     if (state?.phase !== "resolving") return;
-    const ms = state.lastAnswerCorrect ? 5600 : 10000;
-    const id = window.setTimeout(() => {
-      setState((current) =>
-        current && current.phase === "resolving"
-          ? advanceAfterResolve(current)
-          : current,
-      );
-    }, ms);
-    return () => window.clearTimeout(id);
+    let left = state.lastAnswerCorrect ? 5600 : 10000;
+    let last = Date.now();
+    const id = window.setInterval(() => {
+      const t = Date.now();
+      const dt = t - last;
+      last = t;
+      if (helpOpenRef.current || clockFreezeRef.current != null) return;
+      left -= dt;
+      if (left <= 0) {
+        window.clearInterval(id);
+        setState((current) =>
+          current && current.phase === "resolving"
+            ? advanceAfterResolve(current)
+            : current,
+        );
+      }
+    }, 80);
+    return () => window.clearInterval(id);
   }, [state?.phase, state?.round, state?.lastAnswerCorrect]);
 
   useEffect(() => {
@@ -143,6 +221,10 @@ export function GameApp() {
         scores={scores}
         onStart={(name) => {
           saved.current = false;
+          helpOpenRef.current = false;
+          clockFreezeRef.current = null;
+          setClockFreeze(null);
+          setHelpOpen(false);
           setState(createMatch(name, storeLabel));
         }}
       />
@@ -152,38 +234,47 @@ export function GameApp() {
   return (
     <GameTable
       state={state}
-      now={now}
-      onSelect={(cardId) =>
+      now={clockFreeze ?? now}
+      helpOpen={helpOpen}
+      onSelect={(cardId) => {
+        if (isPaused()) return;
         setState((current) => {
           if (!current) return current;
           if (current.selectedCardId === cardId) return playHuman(current, cardId);
           return selectCard(current, cardId);
-        })
-      }
-      onPlay={() =>
+        });
+      }}
+      onPlay={() => {
+        if (isPaused()) return;
         setState((current) =>
           current && current.selectedCardId
             ? playHuman(current, current.selectedCardId)
             : current,
-        )
-      }
-      onAccuse={(botId) =>
-        setState((current) => (current ? toggleAccuse(current, botId) : current))
-      }
-      onResolveNow={() =>
+        );
+      }}
+      onAccuse={(botId) => {
+        if (isPaused()) return;
+        setState((current) => (current ? toggleAccuse(current, botId) : current));
+      }}
+      onResolveNow={() => {
+        if (isPaused()) return;
         setState((current) =>
           current && current.phase === "accusing" ? resolveRound(current) : current,
-        )
-      }
-      onNext={() =>
+        );
+      }}
+      onNext={() => {
+        if (isPaused()) return;
         setState((current) =>
           current ? advanceAfterResolve(current) : current,
-        )
-      }
-      onQuit={() => setState(null)}
-      onHint={() =>
-        setState((current) => (current ? spendHint(current) : current))
-      }
+        );
+      }}
+      onQuit={leaveTable}
+      onHint={() => {
+        if (isPaused()) return;
+        setState((current) => (current ? spendHint(current) : current));
+      }}
+      onOpenHelp={openHelp}
+      onCloseHelp={closeHelp}
     />
   );
 }
