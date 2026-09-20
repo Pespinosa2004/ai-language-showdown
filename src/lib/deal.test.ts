@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { HAND_SIZE, HINTS_PER_ROUND } from "./bots";
+import { HAND_SIZE, HINTS_PER_SESSION } from "./bots";
 import {
   assertHandContainsCorrect,
   beginRound,
@@ -105,55 +105,64 @@ for (let i = 0; i < 20; i += 1) {
 }
 
 const table = beginRound(createMatch("Crash", "local"));
-assert.equal(table.hintsRemaining, HINTS_PER_ROUND);
+assert.equal(table.hintsRemaining, HINTS_PER_SESSION);
 assert.equal(table.hintLevel, 0);
-assert.equal(table.hintLocked, false);
+assert.equal(table.selectedCardId, null);
 assert.ok(table.correctCard);
 assert.ok(table.prompt);
-const rapid = spendHint(spendHint(table));
-assert.equal(rapid.hintLevel, 2);
+const rapid = spendHint(spendHint(spendHint(table)));
+assert.equal(rapid.hintLevel, 3);
 assert.equal(rapid.hintsRemaining, 0);
-assert.equal(rapid.hintLocked, true);
+assert.equal(rapid.selectedCardId, null);
 assert.equal(displayedHint(rapid), rapid.prompt?.reveal);
 const once = spendHint(table);
 assert.equal(once.hintLevel, 1);
-assert.equal(once.hintsRemaining, HINTS_PER_ROUND - 1);
+assert.equal(once.hintsRemaining, HINTS_PER_SESSION - 1);
 assert.equal(once.hintOpen, true);
-assert.equal(once.hintLocked, false);
+assert.equal(once.selectedCardId, null);
 assert.equal(displayedHint(once), once.prompt?.hint);
 const closed = closeHint(once);
 assert.equal(closed.hintOpen, false);
 assert.equal(closed.hintLevel, 1);
-assert.equal(closed.hintsRemaining, HINTS_PER_ROUND - 1);
+assert.equal(closed.hintsRemaining, HINTS_PER_SESSION - 1);
 const twice = spendHint(closed);
 assert.equal(twice.hintLevel, 2);
-assert.equal(twice.hintsRemaining, 0);
+assert.equal(twice.hintsRemaining, HINTS_PER_SESSION - 2);
 assert.equal(twice.hintOpen, true);
-assert.equal(twice.hintLocked, true);
-assert.equal(displayedHint(twice), twice.prompt?.reveal);
-assert.ok(twice.selectedCardId);
-assert.ok(
-  twice.players
-    .find((player) => player.isHuman)
-    ?.hand.some((card) => card.id === twice.selectedCardId),
-);
-const otherCard = twice.players
-  .find((player) => player.isHuman)
-  ?.hand.find((card) => card.id !== twice.selectedCardId);
+assert.equal(twice.selectedCardId, null);
+assert.equal(displayedHint(twice), twice.prompt?.hint2);
+const youHand = twice.players.find((player) => player.isHuman);
+assert.ok(youHand);
+const firstCard = youHand.hand[0];
+assert.ok(firstCard);
+const picked = selectCard(twice, firstCard.id);
+assert.equal(picked.selectedCardId, firstCard.id);
+const otherCard = youHand.hand.find((card) => card.id !== firstCard.id);
 assert.ok(otherCard);
-assert.equal(selectCard(twice, otherCard.id).selectedCardId, twice.selectedCardId);
-assert.equal(playHuman(twice, otherCard.id).selectedCardId, twice.selectedCardId);
-assert.equal(playHuman(twice, otherCard.id).hintLocked, true);
-const third = spendHint({ ...twice, hintOpen: false });
-assert.equal(third.hintLevel, 2);
+assert.equal(selectCard(picked, otherCard.id).selectedCardId, otherCard.id);
+const playedOther = playHuman(picked, otherCard.id);
+assert.equal(playedOther.players.find((player) => player.isHuman)?.played?.id, otherCard.id);
+const third = spendHint(twice);
+assert.equal(third.hintLevel, 3);
 assert.equal(third.hintsRemaining, 0);
-assert.equal(third.hintOpen, true);
-assert.equal(third.hintLocked, true);
-const nextRound = beginRound(twice);
+assert.equal(third.selectedCardId, null);
+assert.equal(displayedHint(third), third.prompt?.reveal);
+const reopen = spendHint({ ...third, hintOpen: false });
+assert.equal(reopen.hintLevel, 3);
+assert.equal(reopen.hintsRemaining, 0);
+assert.equal(reopen.hintOpen, true);
+const nextRound = beginRound(third);
 assert.equal(nextRound.hintLevel, 0);
-assert.equal(nextRound.hintLocked, false);
 assert.equal(nextRound.hintOpen, false);
-assert.equal(nextRound.hintsRemaining, HINTS_PER_ROUND);
+assert.equal(nextRound.hintsRemaining, 0);
+assert.equal(spendHint(nextRound).hintOpen, false);
+assert.equal(spendHint(nextRound).hintsRemaining, 0);
+const leftover = beginRound(once);
+assert.equal(leftover.hintsRemaining, HINTS_PER_SESSION - 1);
+assert.equal(leftover.hintLevel, 0);
+const leftoverOnce = spendHint(leftover);
+assert.equal(leftoverOnce.hintLevel, 1);
+assert.equal(displayedHint(leftoverOnce), leftoverOnce.prompt?.hint);
 assert.doesNotThrow(() => playBot(table, "clippy"));
 assert.doesNotThrow(() =>
   playBot(
@@ -184,6 +193,10 @@ assert.equal(
   bin001.hint,
   "Slots (left to right) are worth 8, 4, 2, 1. Match each digit of 1010 to a slot and add the slots that hold a 1.",
 );
+assert.equal(
+  bin001.hint2,
+  "1010 has 1s on the 8 slot and the 2 slot. Add 8 + 2.",
+);
 assert.match(bin001.reveal, /10/);
 
 const letterPrompt = PROMPTS.find((prompt) => prompt.id === "bin-letter-001");
@@ -193,13 +206,26 @@ assert.equal(
   "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 00001 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
 );
 assert.match(letterPrompt.reveal, /which is A/);
+assert.match(letterPrompt.hint2, /add to 1/);
 assert.doesNotMatch(letterPrompt.hint, /Play the A card/);
+assert.doesNotMatch(letterPrompt.hint2, /Play the A card/);
 assert.equal(withSpacedEquals("A=00001"), "A = 00001");
 assert.equal(withSpacedEquals("A = 00001, B=00010"), "A = 00001, B = 00010");
 
 for (const prompt of PROMPTS) {
   assert.ok(prompt.hint.trim().length > 20, `${prompt.id} needs a stored hint`);
+  assert.ok(prompt.hint2.trim().length > 12, `${prompt.id} needs a stored second hint`);
   assert.ok(prompt.reveal.trim().length > 8, `${prompt.id} needs a stored reveal`);
+  assert.notEqual(
+    prompt.hint,
+    prompt.hint2,
+    `${prompt.id} first and second hints must differ`,
+  );
+  assert.notEqual(
+    prompt.hint2,
+    prompt.reveal,
+    `${prompt.id} second hint must not be the reveal`,
+  );
   assert.notEqual(
     prompt.hint,
     prompt.reveal,
@@ -220,6 +246,11 @@ for (const prompt of PROMPTS) {
     prompt.hint,
     /[^\s=]=[^=\s]/,
     `${prompt.id} hint must space equals: ${prompt.hint}`,
+  );
+  assert.doesNotMatch(
+    prompt.hint2,
+    /[^\s=]=[^=\s]/,
+    `${prompt.id} second hint must space equals: ${prompt.hint2}`,
   );
   assert.doesNotMatch(
     prompt.reveal,

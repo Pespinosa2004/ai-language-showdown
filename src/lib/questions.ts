@@ -9,6 +9,7 @@ type RawQuestion = {
   answer: string;
   accepted_answers: string[];
   hint: string;
+  hint2: string;
   reveal: string;
   explanation?: string;
 };
@@ -192,6 +193,14 @@ function storedHint(question: RawQuestion): string {
   return hint;
 }
 
+function storedHint2(question: RawQuestion): string {
+  const hint2 = question.hint2.trim();
+  if (!hint2) {
+    throw new Error(`Question ${question.id} is missing a stored second hint`);
+  }
+  return hint2;
+}
+
 function storedReveal(question: RawQuestion): string {
   const reveal = question.reveal.trim();
   if (!reveal) {
@@ -214,6 +223,7 @@ function toPrompt(question: RawQuestion): PromptDef {
     matchValues: matchValuesFor(question),
     matchGlyphs: acceptedAnswers.map(normalizeAnswer),
     hint: withSpacedEquals(storedHint(question)),
+    hint2: withSpacedEquals(storedHint2(question)),
     reveal: withSpacedEquals(storedReveal(question)),
     explanation: withSpacedEquals(
       question.explanation?.trim() ||

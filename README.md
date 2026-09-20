@@ -8,7 +8,7 @@ A last-player-standing card game about **binary, hex, and ASCII**. You sit at a 
 2. A prompt appears from the question bank — binary, hex, ASCII, and 5-bit letter codes (`00001` is A).
 3. Each card shows an encoding on top and Magic-style flavor text underneath. The flavor hints at the value without spelling out the answer.
 4. Your seven cards always include the bank answer plus six distractors. Exact encodings score. Near-misses are traps.
-5. After the plays, tap any bot whose answer is wrong. That bot loses 1 life. **Two correct calls in a row restore 1 of your lives** (max 3). Tap a bot who was right, or play the wrong card yourself, and **you** lose 1 life. A miss shows the matching card from your hand plus a one-line why. Hard prompts get more clock (135s). The light bulb gives **two hints per round**: the first is a stored walkthrough for that prompt, the second reveals the answer and locks your card. The round clock pauses while a hint is open. Wrong bots you skip keep their lives.
+5. After the plays, tap any bot whose answer is wrong. That bot loses 1 life. **Two correct calls in a row restore 1 of your lives** (max 3). Tap a bot who was right, or play the wrong card yourself, and **you** lose 1 life. A miss shows the matching card from your hand plus a one-line why. Hard prompts get more clock (135s). The light bulb gives **three hints for the table** (they do not refill). Extra lamps on the same question get more direct; the third is the answer. You still choose any card. The round clock pauses while a hint is open. Wrong bots you skip keep their lives.
 6. A player at 0 lives stays on the felt, darkened, with their last play showing. You win with at least 1 life left after every bot is out.
 7. The clock does not cost a life. Correct answers score **easy 5 / medium 10 / hard 15**, times a speed multiplier: ≤15s ×2, ≤30s ×1.5, ≤60s ×1.25, slower ×1. Card footnotes on easy rounds print a direct translation; medium keeps flavor; hard hides the line. The title page has an encoding bench with binary / hex / ASCII tables.
 
@@ -24,7 +24,7 @@ Open [http://127.0.0.1:43123](http://127.0.0.1:43123).
 
 ## Grok Voice
 
-The table announcer reads each prompt, each hint, and each locked answer, calls eliminations (`ASCII 8 eliminated, 5 players remaining`), and says **You win** / **You lose**. Set `XAI_API_KEY` to use [xAI Grok TTS](https://docs.x.ai/developers/model-capabilities/audio/text-to-speech) (`eve` by default). With no key it uses the browser speech engine so the table still talks. Heart-break SFX is local Web Audio — Grok TTS is speech-only.
+The table announcer reads each prompt, calls eliminations (`ASCII 8 eliminated, 5 players remaining`), and says **You win** / **You lose**. Set `XAI_API_KEY` to use [xAI Grok TTS](https://docs.x.ai/developers/model-capabilities/audio/text-to-speech) (`eve` by default). With no key it uses the browser speech engine so the table still talks. Heart-break SFX is local Web Audio — Grok TTS is speech-only.
 
 ## Cards and scores (SpacetimeDB)
 

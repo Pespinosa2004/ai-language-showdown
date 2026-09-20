@@ -30,6 +30,7 @@ export type PromptDef = {
   matchValues: number[];
   matchGlyphs: string[];
   hint: string;
+  hint2: string;
   reveal: string;
   explanation: string;
 };
@@ -103,7 +104,6 @@ export type GameState = {
   hintRound: number;
   hintOpen: boolean;
   hintLevel: number;
-  hintLocked: boolean;
   promptStartedAt: number;
   answeredAt: number | null;
   storeLabel: string;

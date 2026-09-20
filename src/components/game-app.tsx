@@ -250,7 +250,6 @@ export function GameApp() {
         if (helpBlocksTable()) return;
         setState((current) => {
           if (!current) return current;
-          if (current.hintLocked && current.selectedCardId !== cardId) return current;
           if (current.selectedCardId === cardId) return playHuman(current, cardId);
           return selectCard(current, cardId);
         });

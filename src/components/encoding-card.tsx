@@ -52,10 +52,10 @@ export function EncodingCard({
           "border-fuchsia-400/30 bg-linear-to-b from-fuchsia-950 to-slate-950",
         selected &&
           !compact &&
-          "-translate-y-3 ring-2 ring-amber-300 ring-offset-2 ring-offset-[#123226]",
+          "z-10 border-amber-300 ring-2 ring-inset ring-amber-300",
         selected &&
           compact &&
-          "ring-2 ring-amber-300 ring-offset-1 ring-offset-[#123226]",
+          "border-amber-300 ring-2 ring-inset ring-amber-300",
         disabled && !selected && "opacity-60",
       )}
     >

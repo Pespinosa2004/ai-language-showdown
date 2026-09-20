@@ -196,9 +196,10 @@ function HowToPlay() {
             15. The timer is still on the felt: ≤15s ×2, ≤30s ×1.5, ≤60s ×1.25,
             slower ×1. Hard prompts get a longer clock. A wrong card shows the
             matching card from your hand on the right, with a one-line why
-            underneath. Two lamps each round: first walks the question, second
-            gives the answer and locks that card until the next deal. The clock
-            pauses while a hint is open.
+            underneath. Three lamps for the whole table — they do not refill.
+            Extra lamps on the same question get more direct; the third is the
+            answer. You still pick any card. The clock pauses while a hint is
+            open.
           </li>
           <li className="flex gap-2">
             <ShieldAlert className="mt-0.5 size-4 shrink-0 text-amber-300" />

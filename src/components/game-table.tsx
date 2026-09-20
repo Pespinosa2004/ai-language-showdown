@@ -1,7 +1,7 @@
 "use client";
 
 import { Lightbulb, XIcon } from "lucide-react";
-import { BOTS, HINTS_PER_ROUND, roundAccuseMs, roundTimerMs } from "@/lib/bots";
+import { BOTS, HINTS_PER_SESSION, roundAccuseMs, roundTimerMs } from "@/lib/bots";
 import { EncodingCard } from "@/components/encoding-card";
 import { EncodingHelp } from "@/components/encoding-help";
 import { HealthPips, PlayerSeat } from "@/components/player-seat";
@@ -68,7 +68,7 @@ export function GameTable({
   const hintLevel = state.hintLevel ?? 0;
   const canHint =
     (state.phase === "prompting" || state.phase === "accusing") &&
-    (hintLevel < 2 || !state.hintOpen);
+    ((hintsLeft > 0 && hintLevel < 3) || (hintLevel > 0 && !state.hintOpen));
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -99,7 +99,7 @@ export function GameTable({
                 )}
                 disabled={!canHint}
                 onClick={onHint}
-                aria-label={`Hint, ${hintsLeft} left this round`}
+                aria-label={`Hint, ${hintsLeft} left this table`}
               >
                 <Lightbulb
                   className={cn(
@@ -110,16 +110,20 @@ export function GameTable({
                   )}
                 />
                 <span className="text-[11px] tracking-[0.16em]">
-                  {hintsLeft}/{HINTS_PER_ROUND}
+                  {hintsLeft}/{HINTS_PER_SESSION}
                 </span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {hintLevel >= 2
-                ? "Answer is locked this round. Next round restores the lamps."
-                : hintLevel === 1
-                  ? "Second lamp gives the answer and locks your card."
-                  : "First lamp walks the question. Second lamp is the answer."}
+              {hintsLeft <= 0 && hintLevel === 0
+                ? "No lamps left this table."
+                : hintLevel >= 3
+                  ? "That was the answer. Lamps do not refill."
+                  : hintLevel === 2
+                    ? "Third lamp is the answer. Lamps do not refill."
+                    : hintLevel === 1
+                      ? "Second lamp is more direct. Third lamp is the answer."
+                      : "Three lamps for the table. Each extra lamp on this question is more direct."}
             </TooltipContent>
           </Tooltip>
           <div className="font-mono text-sm text-amber-200">
@@ -172,7 +176,11 @@ export function GameTable({
         <div className="flex items-start gap-3 border-b border-amber-200/20 bg-amber-950/50 px-4 py-3 text-sm text-amber-100">
           <div className="min-w-0 flex-1">
             <p className="font-mono text-[10px] tracking-[0.2em] text-amber-200/80">
-              {hintLevel >= 2 ? "ANSWER · CARD LOCKED · CLOCK PAUSED" : "HINT · CLOCK PAUSED"}
+              {hintLevel >= 3
+                ? "ANSWER · CLOCK PAUSED"
+                : hintLevel === 2
+                  ? "DIRECT HINT · CLOCK PAUSED"
+                  : "HINT · CLOCK PAUSED"}
             </p>
             <p className="mt-1 text-pretty leading-6">{displayedHint(state)}</p>
           </div>
@@ -347,28 +355,20 @@ export function GameTable({
                 : "No cards left in hand."}
             </p>
           ) : (
-            you.hand.map((card) => {
-              const lockedOut =
-                state.hintLocked && card.id !== state.selectedCardId;
-              return (
-                <EncodingCard
-                  key={card.id}
-                  card={card}
-                  selected={state.selectedCardId === card.id}
-                  disabled={
-                    state.phase !== "prompting" ||
-                    Boolean(you.played) ||
-                    lockedOut
-                  }
-                  difficulty={prompt?.difficulty}
-                  onClick={
-                    state.phase === "prompting" && !you.played && !lockedOut
-                      ? () => onSelect(card.id)
-                      : undefined
-                  }
-                />
-              );
-            })
+            you.hand.map((card) => (
+              <EncodingCard
+                key={card.id}
+                card={card}
+                selected={state.selectedCardId === card.id}
+                disabled={state.phase !== "prompting" || Boolean(you.played)}
+                difficulty={prompt?.difficulty}
+                onClick={
+                  state.phase === "prompting" && !you.played
+                    ? () => onSelect(card.id)
+                    : undefined
+                }
+              />
+            ))
           )}
         </div>
       </section>

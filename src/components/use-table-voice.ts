@@ -8,7 +8,6 @@ import {
   questionLine,
   winLine,
 } from "@/lib/announce";
-import { displayedHint } from "@/lib/engine";
 import { playHeartBreak } from "@/lib/sfx";
 import type { GameState } from "@/lib/types";
 
@@ -160,30 +159,6 @@ export function useTableVoice(state: GameState | null) {
       before?.prompt?.id !== state.prompt.id
     ) {
       enqueue({ kind: "speak", text: questionLine(state.prompt.text) });
-    }
-
-    if (
-      state.hintOpen &&
-      state.prompt &&
-      (!before?.hintOpen || before.hintLevel !== state.hintLevel)
-    ) {
-      const text = displayedHint(state).trim();
-      if (text) {
-        abortRef.current?.abort();
-        abortRef.current = null;
-        const audio = audioRef.current;
-        if (audio) {
-          audio.pause();
-          audio.removeAttribute("src");
-          audio.load();
-          audioRef.current = null;
-        }
-        audioDoneRef.current?.();
-        audioDoneRef.current = null;
-        if (typeof window !== "undefined") window.speechSynthesis?.cancel();
-        queue.current = queue.current.filter((job) => job.kind !== "speak");
-        enqueue({ kind: "speak", text });
-      }
     }
 
     if (before) {

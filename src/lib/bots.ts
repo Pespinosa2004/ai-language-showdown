@@ -70,9 +70,9 @@ export const BOTS: BotDef[] = [
 
 export const MAX_HEALTH = 3;
 export const HAND_SIZE = 7;
-export const HINTS_PER_ROUND = 2;
-/** @deprecated use HINTS_PER_ROUND — two lamps each round */
-export const HINTS_PER_SESSION = HINTS_PER_ROUND;
+export const HINTS_PER_SESSION = 3;
+/** @deprecated use HINTS_PER_SESSION — three lamps for the whole table */
+export const HINTS_PER_ROUND = HINTS_PER_SESSION;
 export const TIMER_BY_DIFFICULTY = {
   easy: 60_000,
   medium: 90_000,
