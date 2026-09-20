@@ -8,7 +8,9 @@
     "accepted_answers": [
       "10",
       "ten"
-    ]
+    ],
+    "hint": "Slots (left to right) are worth 8, 4, 2, 1. Match each digit of 1010 to a slot and add the slots that hold a 1.",
+    "reveal": "1010 is 8 + 2 = 10. Play the card that shows 10."
   },
   {
     "id": "bin-002",
@@ -19,7 +21,9 @@
     "accepted_answers": [
       "0101",
       "0b0101"
-    ]
+    ],
+    "hint": "Slots (left to right) are worth 8, 4, 2, 1. Decimal 5 is 4 + 1. Put a 1 in the 4 slot and the 1 slot, and 0 in the others.",
+    "reveal": "Decimal 5 is 0101. Play the card that shows 0101."
   },
   {
     "id": "bin-003",
@@ -30,7 +34,9 @@
     "accepted_answers": [
       "15",
       "fifteen"
-    ]
+    ],
+    "hint": "Slots (left to right) are worth 8, 4, 2, 1. Every digit of 1111 is a 1, so add every slot.",
+    "reveal": "1111 is 8 + 4 + 2 + 1 = 15. Play the card that shows 15."
   },
   {
     "id": "bin-004",
@@ -41,7 +47,9 @@
     "accepted_answers": [
       "1001",
       "0b1001"
-    ]
+    ],
+    "hint": "Slots (left to right) are worth 8, 4, 2, 1. Decimal 9 is 8 + 1. Put a 1 in those two slots: 1001.",
+    "reveal": "Decimal 9 is 1001. Play the card that shows 1001."
   },
   {
     "id": "bin-005",
@@ -52,7 +60,9 @@
     "accepted_answers": [
       "6",
       "six"
-    ]
+    ],
+    "hint": "Slots (left to right) are worth 8, 4, 2, 1. In 0110 the 4 and the 2 are on. Add those two slots.",
+    "reveal": "0110 is 4 + 2 = 6. Play the card that shows 6."
   },
   {
     "id": "bin-006",
@@ -63,7 +73,9 @@
     "accepted_answers": [
       "1100",
       "0b1100"
-    ]
+    ],
+    "hint": "Slots (left to right) are worth 8, 4, 2, 1. Decimal 12 is 8 + 4. Put a 1 in those two slots: 1100.",
+    "reveal": "Decimal 12 is 1100. Play the card that shows 1100."
   },
   {
     "id": "bin-007",
@@ -74,7 +86,9 @@
     "accepted_answers": [
       "1",
       "one"
-    ]
+    ],
+    "hint": "Slots (left to right) are worth 8, 4, 2, 1. Only the last digit of 0001 is a 1, and that slot is worth 1.",
+    "reveal": "0001 is 1. Play the card that shows 1."
   },
   {
     "id": "bin-008",
@@ -85,7 +99,9 @@
     "accepted_answers": [
       "11001000",
       "0b11001000"
-    ]
+    ],
+    "hint": "Eight slots (left to right) are worth 128, 64, 32, 16, 8, 4, 2, 1. Decimal 200 is 128 + 64 + 8. Turn those three slots on.",
+    "reveal": "Decimal 200 is 11001000. Play the card that shows 11001000."
   },
   {
     "id": "bin-009",
@@ -95,7 +111,9 @@
     "answer": "90",
     "accepted_answers": [
       "90"
-    ]
+    ],
+    "hint": "Eight slots (left to right) are worth 128, 64, 32, 16, 8, 4, 2, 1. In 01011010 the 64, 16, 8, and 2 are on. Add those.",
+    "reveal": "01011010 is 64 + 16 + 8 + 2 = 90. Play the card that shows 90."
   },
   {
     "id": "bin-010",
@@ -106,7 +124,9 @@
     "accepted_answers": [
       "00100101",
       "0b00100101"
-    ]
+    ],
+    "hint": "Eight slots (left to right) are worth 128, 64, 32, 16, 8, 4, 2, 1. Decimal 37 is 32 + 4 + 1. Turn those three slots on.",
+    "reveal": "Decimal 37 is 00100101. Play the card that shows 00100101."
   },
   {
     "id": "bin-011",
@@ -116,7 +136,9 @@
     "answer": "240",
     "accepted_answers": [
       "240"
-    ]
+    ],
+    "hint": "Eight slots (left to right) are worth 128, 64, 32, 16, 8, 4, 2, 1. In 11110000 the left four slots are on. Add 128 + 64 + 32 + 16.",
+    "reveal": "11110000 is 128 + 64 + 32 + 16 = 240. Play the card that shows 240."
   },
   {
     "id": "bin-012",
@@ -127,7 +149,9 @@
     "accepted_answers": [
       "10000000",
       "0b10000000"
-    ]
+    ],
+    "hint": "Eight slots (left to right) are worth 128, 64, 32, 16, 8, 4, 2, 1. Decimal 128 is exactly the leftmost slot, so the reading is 10000000.",
+    "reveal": "Decimal 128 is 10000000. Play the card that shows 10000000."
   },
   {
     "id": "bin-013",
@@ -137,7 +161,9 @@
     "answer": "15",
     "accepted_answers": [
       "15"
-    ]
+    ],
+    "hint": "Eight slots (left to right) are worth 128, 64, 32, 16, 8, 4, 2, 1. In 00001111 only the right four slots are on: 8 + 4 + 2 + 1.",
+    "reveal": "00001111 is 8 + 4 + 2 + 1 = 15. Play the card that shows 15."
   },
   {
     "id": "bin-014",
@@ -148,7 +174,9 @@
     "accepted_answers": [
       "11111111",
       "0b11111111"
-    ]
+    ],
+    "hint": "Eight slots (left to right) are worth 128, 64, 32, 16, 8, 4, 2, 1. Decimal 255 is every slot added together. Turn every digit on.",
+    "reveal": "Decimal 255 is 11111111. Play the card that shows 11111111."
   },
   {
     "id": "bin-015",
@@ -159,7 +187,9 @@
     "accepted_answers": [
       "0000001111101000",
       "0b0000001111101000"
-    ]
+    ],
+    "hint": "Sixteen slots, each worth twice the one on its right. Decimal 1000 is 512 + 256 + 128 + 64 + 32 + 8. Write those 1s, then pad zeros on the left to 16 bits.",
+    "reveal": "Decimal 1000 is 0000001111101000. Play that binary card."
   },
   {
     "id": "bin-016",
@@ -169,7 +199,9 @@
     "answer": "3242",
     "accepted_answers": [
       "3242"
-    ]
+    ],
+    "hint": "Read 0000110010101010 from the left. The 1s sit on 2048, 1024, 128, 32, 8, and 2. Add those six numbers.",
+    "reveal": "0000110010101010 is 2048 + 1024 + 128 + 32 + 8 + 2 = 3242. Play the card that shows 3242."
   },
   {
     "id": "bin-017",
@@ -180,7 +212,9 @@
     "accepted_answers": [
       "0001000000000000",
       "0b0001000000000000"
-    ]
+    ],
+    "hint": "4096 is 2 to the twelfth. In 16 bits that is a single 1 with twelve 0s after it: 0001000000000000.",
+    "reveal": "Decimal 4096 is 0001000000000000. Play that binary card."
   },
   {
     "id": "hex-001",
@@ -191,7 +225,9 @@
     "accepted_answers": [
       "15",
       "fifteen"
-    ]
+    ],
+    "hint": "Hex digits after 9 are A = 10, B = 11, C = 12, D = 13, E = 14, F = 15. 0xF is that last hex digit.",
+    "reveal": "0xF is 15. Play the card that shows 15."
   },
   {
     "id": "hex-002",
@@ -202,7 +238,9 @@
     "accepted_answers": [
       "10",
       "ten"
-    ]
+    ],
+    "hint": "Hex digits after 9 start at A. A = 10, so 0xA is ten.",
+    "reveal": "0xA is 10. Play the card that shows 10."
   },
   {
     "id": "hex-003",
@@ -215,7 +253,9 @@
       "c",
       "0xC",
       "0xc"
-    ]
+    ],
+    "hint": "Hex digits: 10 = A, 11 = B, 12 = C, 13 = D, 14 = E, 15 = F. Decimal 12 is the letter C.",
+    "reveal": "Decimal 12 is C in hex. Play the C card."
   },
   {
     "id": "hex-004",
@@ -226,7 +266,9 @@
     "accepted_answers": [
       "9",
       "nine"
-    ]
+    ],
+    "hint": "Hex 0–9 match ordinary digits. 0x9 is the same as decimal 9.",
+    "reveal": "0x9 is 9. Play the card that shows 9."
   },
   {
     "id": "hex-005",
@@ -239,7 +281,9 @@
       "f",
       "0xF",
       "0xf"
-    ]
+    ],
+    "hint": "Hex digits: 10 = A through 15 = F. Decimal 15 is the last hex digit, F.",
+    "reveal": "Decimal 15 is F in hex. Play the F card."
   },
   {
     "id": "hex-006",
@@ -250,7 +294,9 @@
     "accepted_answers": [
       "14",
       "fourteen"
-    ]
+    ],
+    "hint": "Hex digits: A = 10, B = 11, C = 12, D = 13, E = 14, F = 15. 0xE is 14.",
+    "reveal": "0xE is 14. Play the card that shows 14."
   },
   {
     "id": "hex-007",
@@ -261,7 +307,9 @@
     "accepted_answers": [
       "7",
       "0x7"
-    ]
+    ],
+    "hint": "Hex 0–9 match ordinary digits. Decimal 7 stays 7 in hex.",
+    "reveal": "Decimal 7 is 7 in hex. Play the 7 card."
   },
   {
     "id": "hex-008",
@@ -274,7 +322,9 @@
       "f0",
       "0xF0",
       "0xf0"
-    ]
+    ],
+    "hint": "Split 11110000 into two groups of four: 1111 and 0000. 1111 is F, 0000 is 0, so the hex is F0.",
+    "reveal": "11110000 is 0xF0. Play the F0 card."
   },
   {
     "id": "hex-009",
@@ -284,7 +334,9 @@
     "answer": "74",
     "accepted_answers": [
       "74"
-    ]
+    ],
+    "hint": "0x4A means 4 sixteens and A. A = 10, so compute 4 × 16 + 10.",
+    "reveal": "0x4A is 4 × 16 + 10 = 74. Play the card that shows 74."
   },
   {
     "id": "hex-010",
@@ -297,7 +349,9 @@
       "c8",
       "0xC8",
       "0xc8"
-    ]
+    ],
+    "hint": "Two hex digits: how many 16s fit in 200? 12 sixteens are 192, remainder 8. 12 is C, so the hex is C8.",
+    "reveal": "Decimal 200 is 0xC8. Play the C8 card."
   },
   {
     "id": "hex-011",
@@ -310,7 +364,9 @@
       "2d",
       "0x2D",
       "0x2d"
-    ]
+    ],
+    "hint": "Split 00101101 into 0010 and 1101. 0010 is 2. 1101 is 8 + 4 + 1 = 13, and 13 is D in hex.",
+    "reveal": "00101101 is 0x2D. Play the 2D card."
   },
   {
     "id": "hex-012",
@@ -320,7 +376,9 @@
     "answer": "127",
     "accepted_answers": [
       "127"
-    ]
+    ],
+    "hint": "0x7F means 7 sixteens and F. F = 15, so compute 7 × 16 + 15.",
+    "reveal": "0x7F is 7 × 16 + 15 = 127. Play the card that shows 127."
   },
   {
     "id": "hex-013",
@@ -331,7 +389,9 @@
     "accepted_answers": [
       "10",
       "0x10"
-    ]
+    ],
+    "hint": "16 is one sixteen and zero leftover. In hex that is 10 — a 1 in the sixteens place and 0 in the ones, written 0x10.",
+    "reveal": "Decimal 16 is 0x10. Play the 0x10 card."
   },
   {
     "id": "hex-014",
@@ -341,7 +401,9 @@
     "answer": "255",
     "accepted_answers": [
       "255"
-    ]
+    ],
+    "hint": "F = 15. 0xFF is 15 sixteens plus 15 ones. That is 240 + 15.",
+    "reveal": "0xFF is 15 × 16 + 15 = 255. Play the card that shows 255."
   },
   {
     "id": "hex-015",
@@ -352,7 +414,9 @@
     "accepted_answers": [
       "1000",
       "0x1000"
-    ]
+    ],
+    "hint": "4096 is 16 × 16 × 16, which is a 1 in the 4096s hex place: 1000 in hex, written 0x1000.",
+    "reveal": "Decimal 4096 is 0x1000. Play the 0x1000 card."
   },
   {
     "id": "hex-016",
@@ -362,7 +426,9 @@
     "answer": "65535",
     "accepted_answers": [
       "65535"
-    ]
+    ],
+    "hint": "F = 15. 0xFFFF is four F digits: 15 × 4096 + 15 × 256 + 15 × 16 + 15, which fills every slot in 16 bits.",
+    "reveal": "0xFFFF is 65535. Play the card that shows 65535."
   },
   {
     "id": "hex-017",
@@ -372,7 +438,9 @@
     "answer": "3242",
     "accepted_answers": [
       "3242"
-    ]
+    ],
+    "hint": "0x0CAA: C = 12, A = 10. Compute 12 × 256 + 10 × 16 + 10.",
+    "reveal": "0x0CAA is 12 × 256 + 10 × 16 + 10 = 3242. Play the card that shows 3242."
   },
   {
     "id": "asc-001",
@@ -382,7 +450,9 @@
     "answer": "A",
     "accepted_answers": [
       "A"
-    ]
+    ],
+    "hint": "Capital letters start at 65. 65 is the first capital, A. 66 is B, and so on up to 90 = Z.",
+    "reveal": "ASCII 65 is A. Play the A card."
   },
   {
     "id": "asc-002",
@@ -392,7 +462,9 @@
     "answer": "97",
     "accepted_answers": [
       "97"
-    ]
+    ],
+    "hint": "Capital A is 65. Lowercase letters start 32 later: a is 65 + 32.",
+    "reveal": "The character a is ASCII 97. Play the card that shows 97."
   },
   {
     "id": "asc-003",
@@ -402,7 +474,9 @@
     "answer": "Z",
     "accepted_answers": [
       "Z"
-    ]
+    ],
+    "hint": "Capitals run 65 = A through 90 = Z. 90 is the last capital.",
+    "reveal": "ASCII 90 is Z. Play the Z card."
   },
   {
     "id": "asc-004",
@@ -412,7 +486,9 @@
     "answer": "90",
     "accepted_answers": [
       "90"
-    ]
+    ],
+    "hint": "A is 65. Z is 25 letters later: 65 + 25.",
+    "reveal": "The character Z is ASCII 90. Play the card that shows 90."
   },
   {
     "id": "asc-005",
@@ -424,7 +500,9 @@
       "0",
       "zero",
       "digit 0"
-    ]
+    ],
+    "hint": "Digit characters start at 48. 48 is the written character 0, not the number zero as a count.",
+    "reveal": "ASCII 48 is the character 0. Play the 0 character card."
   },
   {
     "id": "asc-006",
@@ -434,7 +512,9 @@
     "answer": "101",
     "accepted_answers": [
       "101"
-    ]
+    ],
+    "hint": "Lowercase a is 97. e is the fifth letter: 97 + 4.",
+    "reveal": "The character e is ASCII 101. Play the card that shows 101."
   },
   {
     "id": "asc-007",
@@ -445,7 +525,9 @@
     "accepted_answers": [
       "01100001",
       "0b01100001"
-    ]
+    ],
+    "hint": "Lowercase a is 97. Write 97 in 8 bits: 64 + 32 + 1, which is 01100001.",
+    "reveal": "a is 01100001 in ASCII binary. Play that card."
   },
   {
     "id": "asc-008",
@@ -456,7 +538,9 @@
     "accepted_answers": [
       "41",
       "0x41"
-    ]
+    ],
+    "hint": "Capital A is 65. 65 in hex is 4 sixteens and 1: 0x41.",
+    "reveal": "A is 0x41 in ASCII hex. Play the 0x41 card."
   },
   {
     "id": "asc-009",
@@ -466,7 +550,9 @@
     "answer": "B",
     "accepted_answers": [
       "B"
-    ]
+    ],
+    "hint": "01000010 is 64 + 2 = 66. Capitals start at 65 = A, so 66 is the next letter.",
+    "reveal": "01000010 is ASCII B. Play the B card."
   },
   {
     "id": "asc-010",
@@ -476,7 +562,9 @@
     "answer": "33",
     "accepted_answers": [
       "33"
-    ]
+    ],
+    "hint": "Printable characters start at 32 (space). The next one, 33, is the exclamation mark !.",
+    "reveal": "! is ASCII 33. Play the card that shows 33."
   },
   {
     "id": "asc-011",
@@ -486,7 +574,9 @@
     "answer": "$",
     "accepted_answers": [
       "$"
-    ]
+    ],
+    "hint": "0x24 is 2 × 16 + 4 = 36. ASCII 36 is the dollar sign $.",
+    "reveal": "0x24 is the character $. Play the $ card."
   },
   {
     "id": "asc-012",
@@ -497,7 +587,9 @@
     "accepted_answers": [
       "00110101",
       "0b00110101"
-    ]
+    ],
+    "hint": "The character 0 is ASCII 48. The character 5 is 48 + 5 = 53. 53 in 8 bits is 32 + 16 + 4 + 1, or 00110101.",
+    "reveal": "The character 5 is 00110101. Play that binary card."
   },
   {
     "id": "asc-013",
@@ -507,7 +599,9 @@
     "answer": "World",
     "accepted_answers": [
       "World"
-    ]
+    ],
+    "hint": "Split 0x576F726C64 into bytes: 57 6F 72 6C 64. Each byte is one letter: 0x57 = W, 0x6F = o, 0x72 = r, 0x6C = l, 0x64 = d.",
+    "reveal": "0x576F726C64 is World."
   },
   {
     "id": "asc-014",
@@ -517,7 +611,9 @@
     "answer": "126",
     "accepted_answers": [
       "126"
-    ]
+    ],
+    "hint": "The last ordinary keyboard character is tilde ~, ASCII 126, just before 127.",
+    "reveal": "~ is ASCII 126. Play the card that shows 126."
   },
   {
     "id": "asc-015",
@@ -527,7 +623,9 @@
     "answer": "Java",
     "accepted_answers": [
       "Java"
-    ]
+    ],
+    "hint": "Split 0x4A617661 into bytes: 4A 61 76 61. 0x4A is J, 0x61 is a, 0x76 is v, 0x61 is a again.",
+    "reveal": "0x4A617661 is Java."
   },
   {
     "id": "asc-016",
@@ -538,7 +636,9 @@
     "accepted_answers": [
       "00111111",
       "0b00111111"
-    ]
+    ],
+    "hint": "The question mark ? is ASCII 63. 63 is 32 + 16 + 8 + 4 + 2 + 1, so the 8-bit form is 00111111.",
+    "reveal": "? is 00111111. Play that binary card."
   },
   {
     "id": "bin-letter-001",
@@ -550,7 +650,9 @@
       "A",
       "a",
       "00001"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 00001 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "00001 is 1, which is A. Play the A card."
   },
   {
     "id": "bin-letter-002",
@@ -562,19 +664,23 @@
       "B",
       "b",
       "00010"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 00010 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "00010 is 2, which is B. Play the B card."
   },
   {
     "id": "bin-letter-003",
     "category": "binary",
     "difficulty": "easy",
-    "prompt": "Decode the binary sequence 00011 \u2014 what letter is it?",
+    "prompt": "Decode the binary sequence 00011 — what letter is it?",
     "answer": "C",
     "accepted_answers": [
       "C",
       "c",
       "00011"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 00011 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "00011 is 2 + 1 = 3, which is C. Play the C card."
   },
   {
     "id": "bin-letter-004",
@@ -586,7 +692,9 @@
       "D",
       "d",
       "00100"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 00100 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "00100 is 4, which is D. Play the D card."
   },
   {
     "id": "bin-letter-005",
@@ -598,7 +706,9 @@
       "E",
       "e",
       "00101"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 00101 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "00101 is 4 + 1 = 5, which is E. Play the E card."
   },
   {
     "id": "bin-letter-006",
@@ -610,7 +720,9 @@
       "F",
       "f",
       "00110"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 00110 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "00110 is 4 + 2 = 6, which is F. Play the F card."
   },
   {
     "id": "bin-letter-007",
@@ -622,19 +734,23 @@
       "G",
       "g",
       "00111"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 00111 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "00111 is 4 + 2 + 1 = 7, which is G. Play the G card."
   },
   {
     "id": "bin-letter-008",
     "category": "binary",
     "difficulty": "easy",
-    "prompt": "Decode the binary sequence 01000 \u2014 what letter is it?",
+    "prompt": "Decode the binary sequence 01000 — what letter is it?",
     "answer": "H",
     "accepted_answers": [
       "H",
       "h",
       "01000"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 01000 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "01000 is 8, which is H. Play the H card."
   },
   {
     "id": "bin-letter-009",
@@ -646,7 +762,9 @@
       "I",
       "i",
       "01001"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 01001 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "01001 is 8 + 1 = 9, which is I. Play the I card."
   },
   {
     "id": "bin-letter-010",
@@ -658,7 +776,9 @@
       "J",
       "j",
       "01010"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 01010 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "01010 is 8 + 2 = 10, which is J. Play the J card."
   },
   {
     "id": "bin-letter-011",
@@ -670,7 +790,9 @@
       "K",
       "k",
       "01011"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 01011 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "01011 is 8 + 2 + 1 = 11, which is K. Play the K card."
   },
   {
     "id": "bin-letter-012",
@@ -682,19 +804,23 @@
       "L",
       "l",
       "01100"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 01100 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "01100 is 8 + 4 = 12, which is L. Play the L card."
   },
   {
     "id": "bin-letter-013",
     "category": "binary",
     "difficulty": "medium",
-    "prompt": "Decode the binary sequence 01101 \u2014 what letter is it?",
+    "prompt": "Decode the binary sequence 01101 — what letter is it?",
     "answer": "M",
     "accepted_answers": [
       "M",
       "m",
       "01101"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 01101 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "01101 is 8 + 4 + 1 = 13, which is M. Play the M card."
   },
   {
     "id": "bin-letter-014",
@@ -706,7 +832,9 @@
       "N",
       "n",
       "01110"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 01110 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "01110 is 8 + 4 + 2 = 14, which is N. Play the N card."
   },
   {
     "id": "bin-letter-015",
@@ -718,7 +846,9 @@
       "O",
       "o",
       "01111"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 01111 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "01111 is 8 + 4 + 2 + 1 = 15, which is O. Play the O card."
   },
   {
     "id": "bin-letter-016",
@@ -730,7 +860,9 @@
       "P",
       "p",
       "10000"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 10000 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "10000 is 16, which is P. Play the P card."
   },
   {
     "id": "bin-letter-017",
@@ -742,19 +874,23 @@
       "Q",
       "q",
       "10001"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 10001 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "10001 is 16 + 1 = 17, which is Q. Play the Q card."
   },
   {
     "id": "bin-letter-018",
     "category": "binary",
     "difficulty": "hard",
-    "prompt": "Decode the binary sequence 10010 \u2014 what letter is it?",
+    "prompt": "Decode the binary sequence 10010 — what letter is it?",
     "answer": "R",
     "accepted_answers": [
       "R",
       "r",
       "10010"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 10010 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "10010 is 16 + 2 = 18, which is R. Play the R card."
   },
   {
     "id": "bin-letter-019",
@@ -766,7 +902,9 @@
       "S",
       "s",
       "10011"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 10011 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "10011 is 16 + 2 + 1 = 19, which is S. Play the S card."
   },
   {
     "id": "bin-letter-020",
@@ -778,7 +916,9 @@
       "T",
       "t",
       "10100"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 10100 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "10100 is 16 + 4 = 20, which is T. Play the T card."
   },
   {
     "id": "bin-letter-021",
@@ -790,7 +930,9 @@
       "U",
       "u",
       "10101"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 10101 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "10101 is 16 + 4 + 1 = 21, which is U. Play the U card."
   },
   {
     "id": "bin-letter-022",
@@ -802,19 +944,23 @@
       "V",
       "v",
       "10110"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 10110 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "10110 is 16 + 4 + 2 = 22, which is V. Play the V card."
   },
   {
     "id": "bin-letter-023",
     "category": "binary",
     "difficulty": "hard",
-    "prompt": "Decode the binary sequence 10111 \u2014 what letter is it?",
+    "prompt": "Decode the binary sequence 10111 — what letter is it?",
     "answer": "W",
     "accepted_answers": [
       "W",
       "w",
       "10111"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 10111 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "10111 is 16 + 4 + 2 + 1 = 23, which is W. Play the W card."
   },
   {
     "id": "bin-letter-024",
@@ -826,7 +972,9 @@
       "X",
       "x",
       "11000"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 11000 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "11000 is 16 + 8 = 24, which is X. Play the X card."
   },
   {
     "id": "bin-letter-025",
@@ -838,6 +986,8 @@
       "Y",
       "y",
       "11001"
-    ]
+    ],
+    "hint": "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 11001 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+    "reveal": "11001 is 16 + 8 + 1 = 25, which is Y. Play the Y card."
   }
 ]

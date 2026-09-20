@@ -2,7 +2,7 @@ import { CARDS, PROMPTS } from "@/lib/catalog";
 import {
   BOTS,
   HAND_SIZE,
-  HINTS_PER_SESSION,
+  HINTS_PER_ROUND,
   MAX_HEALTH,
   roundAccuseMs,
   roundTimerMs,
@@ -397,9 +397,11 @@ export function createMatch(playerName: string, storeLabel: string): GameState {
     lastRoundPoints: 0,
     lastAnswerCorrect: true,
     correctCard: null,
-    hintsRemaining: HINTS_PER_SESSION,
+    hintsRemaining: HINTS_PER_ROUND,
     hintRound: 0,
     hintOpen: false,
+    hintLevel: 0,
+    hintLocked: false,
     promptStartedAt: 0,
     answeredAt: null,
     storeLabel,
@@ -481,7 +483,9 @@ export function beginRound(state: GameState, now = Date.now()): GameState {
     lastAnswerCorrect: true,
     correctCard,
     hintOpen: false,
-    hintsRemaining: state.hintsRemaining ?? HINTS_PER_SESSION,
+    hintLevel: 0,
+    hintLocked: false,
+    hintsRemaining: HINTS_PER_ROUND,
     hintRound: state.hintRound ?? 0,
     usedPromptIds:
       unused.length > 0 ? [...state.usedPromptIds, prompt.id] : [prompt.id],
@@ -540,6 +544,7 @@ function enterAccuseIfReady(state: GameState, now = Date.now()): GameState {
 
 export function selectCard(state: GameState, cardId: string): GameState {
   if (state.phase !== "prompting") return state;
+  if (state.hintLocked) return state;
   const you = state.players.find((player) => player.isHuman);
   if (!you || you.played) return state;
   if (!you.hand.some((card) => card.id === cardId)) return state;
@@ -550,6 +555,9 @@ export function playHuman(state: GameState, cardId: string): GameState {
   if (state.phase !== "prompting") return state;
   const you = state.players.find((player) => player.isHuman);
   if (!you || you.played) return state;
+  if (state.hintLocked && state.selectedCardId && cardId !== state.selectedCardId) {
+    return state;
+  }
   const card = you.hand.find((item) => item.id === cardId);
   if (!card) return state;
   const players = state.players.map((player) =>
@@ -564,6 +572,7 @@ export function playHuman(state: GameState, cardId: string): GameState {
   );
   return enterAccuseIfReady({
     ...state,
+    hintOpen: false,
     players,
     selectedCardId: null,
     answeredAt: state.answeredAt ?? Date.now(),
@@ -816,6 +825,8 @@ export function advanceAfterResolve(state: GameState): GameState {
     prompt: null,
     correctCard: null,
     hintOpen: false,
+    hintLevel: 0,
+    hintLocked: false,
     logs: [line("neutral", "The dealer gathers the cards.")],
   };
 }
@@ -836,24 +847,60 @@ export function youPlayer(state: GameState): PlayerState {
   );
 }
 
+export function displayedHint(state: GameState): string {
+  if (!state.prompt) return "";
+  if ((state.hintLevel ?? 0) >= 2) return state.prompt.reveal;
+  return state.prompt.hint;
+}
+
+function lockCorrectCard(state: GameState): GameState {
+  const you = youPlayer(state);
+  if (you.played) return { ...state, hintLocked: true };
+  const card =
+    you.hand.find((item) => item.id === state.correctCard?.id) ??
+    (state.prompt
+      ? you.hand.find((item) => isExactCard(item, state.prompt!))
+      : undefined) ??
+    (state.prompt
+      ? you.hand.find((item) => cardShowsAnswer(item, state.prompt!))
+      : undefined) ??
+    state.correctCard;
+  if (!card) return { ...state, hintLocked: true };
+  return {
+    ...state,
+    hintLocked: true,
+    selectedCardId: card.id,
+  };
+}
+
+export function closeHint(state: GameState): GameState {
+  if (!state.hintOpen) return state;
+  return { ...state, hintOpen: false };
+}
+
 export function spendHint(state: GameState): GameState {
   if (!state.prompt) return state;
   if (state.phase !== "prompting" && state.phase !== "accusing") return state;
-  if (state.hintOpen) {
-    return { ...state, hintOpen: false };
+  const level = state.hintLevel ?? 0;
+  if (level >= 2) {
+    return { ...state, hintOpen: true };
   }
-  if ((state.hintsRemaining ?? 0) <= 0) return state;
-  return {
+  const nextLevel = level + 1;
+  const next: GameState = {
     ...state,
-    hintsRemaining: state.hintsRemaining - 1,
+    hintLevel: nextLevel,
+    hintsRemaining: Math.max(0, HINTS_PER_ROUND - nextLevel),
     hintRound: state.round,
     hintOpen: true,
     logs: [
       ...state.logs,
       line(
         "warn",
-        `Hint (${state.hintsRemaining - 1} left): ${state.prompt.hint}`,
+        nextLevel >= 2
+          ? `Answer lock: ${state.prompt.reveal}`
+          : `Hint: ${state.prompt.hint}`,
       ),
     ],
   };
+  return nextLevel >= 2 ? lockCorrectCard(next) : next;
 }

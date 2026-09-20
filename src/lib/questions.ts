@@ -8,6 +8,8 @@ type RawQuestion = {
   prompt: string;
   answer: string;
   accepted_answers: string[];
+  hint: string;
+  reveal: string;
   explanation?: string;
 };
 
@@ -154,36 +156,6 @@ export function deriveExplanation(input: {
   );
 }
 
-export function deriveHint(prompt: {
-  text: string;
-  category: string;
-  difficulty: string;
-}): string {
-  const text = prompt.text;
-  if (/hexadecimal|in hexadecimal/i.test(text)) {
-    return withSpacedEquals(
-      "Hex counts 0–9, then A = 10, B = 11, up to F = 15. Do not read it as ordinary decimal.",
-    );
-  }
-  if (/0x[0-9A-Fa-f]+/.test(text) && /decimal/i.test(text)) {
-    return withSpacedEquals(
-      "0x means hex, not decimal. A = 10, B = 11, C = 12, D = 13, E = 14, F = 15.",
-    );
-  }
-  if (/binary representation|bit binary/i.test(text)) {
-    return "Write the number using only 0s and 1s. Add extra 0s on the left if the question asks for a certain length.";
-  }
-  if (/letter/i.test(text) && /[01]{4,}/.test(text)) {
-    return withSpacedEquals("A = 00001, B = 00010, and so on up the alphabet.");
-  }
-  if (/ASCII/i.test(text)) {
-    return withSpacedEquals(
-      "Computers store capital A as 65. Lowercase a is 97. Space is 32.",
-    );
-  }
-  return "Read the question, then pick the card that matches it.";
-}
-
 export function explainFromCard(
   prompt: PromptDef,
   card: { glyph: string; value: number; encoding: string },
@@ -212,6 +184,22 @@ export function explainFromCard(
   );
 }
 
+function storedHint(question: RawQuestion): string {
+  const hint = question.hint.trim();
+  if (!hint) {
+    throw new Error(`Question ${question.id} is missing a stored hint`);
+  }
+  return hint;
+}
+
+function storedReveal(question: RawQuestion): string {
+  const reveal = question.reveal.trim();
+  if (!reveal) {
+    throw new Error(`Question ${question.id} is missing a stored reveal`);
+  }
+  return reveal;
+}
+
 function toPrompt(question: RawQuestion): PromptDef {
   const acceptedAnswers = [
     ...new Set([question.answer, ...question.accepted_answers]),
@@ -225,13 +213,8 @@ function toPrompt(question: RawQuestion): PromptDef {
     difficulty: asDifficulty(question.difficulty),
     matchValues: matchValuesFor(question),
     matchGlyphs: acceptedAnswers.map(normalizeAnswer),
-    hint: withSpacedEquals(
-      deriveHint({
-        text: question.prompt,
-        category: question.category,
-        difficulty: asDifficulty(question.difficulty),
-      }),
-    ),
+    hint: withSpacedEquals(storedHint(question)),
+    reveal: withSpacedEquals(storedReveal(question)),
     explanation: withSpacedEquals(
       question.explanation?.trim() ||
         deriveExplanation({

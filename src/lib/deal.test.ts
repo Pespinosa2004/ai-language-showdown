@@ -1,23 +1,22 @@
 import assert from "node:assert/strict";
-import { HAND_SIZE, HINTS_PER_SESSION } from "./bots";
+import { HAND_SIZE, HINTS_PER_ROUND } from "./bots";
 import {
   assertHandContainsCorrect,
   beginRound,
   cardShowsAnswer,
+  closeHint,
   createMatch,
   dealPlayerOptions,
+  displayedHint,
   isExactCard,
   playBot,
+  playHuman,
   resolveRound,
+  selectCard,
   spendHint,
   timeoutHuman,
 } from "./engine";
-import {
-  deriveExplanation,
-  deriveHint,
-  explainFromCard,
-  withSpacedEquals,
-} from "./questions";
+import { deriveExplanation, explainFromCard, withSpacedEquals } from "./questions";
 import { cardCaption, directTranslation } from "./card-text";
 import { CARDS, PROMPTS } from "./catalog";
 
@@ -106,21 +105,55 @@ for (let i = 0; i < 20; i += 1) {
 }
 
 const table = beginRound(createMatch("Crash", "local"));
-assert.equal(table.hintsRemaining, HINTS_PER_SESSION);
+assert.equal(table.hintsRemaining, HINTS_PER_ROUND);
+assert.equal(table.hintLevel, 0);
+assert.equal(table.hintLocked, false);
 assert.ok(table.correctCard);
+assert.ok(table.prompt);
+const rapid = spendHint(spendHint(table));
+assert.equal(rapid.hintLevel, 2);
+assert.equal(rapid.hintsRemaining, 0);
+assert.equal(rapid.hintLocked, true);
+assert.equal(displayedHint(rapid), rapid.prompt?.reveal);
 const once = spendHint(table);
-assert.equal(once.hintsRemaining, HINTS_PER_SESSION - 1);
+assert.equal(once.hintLevel, 1);
+assert.equal(once.hintsRemaining, HINTS_PER_ROUND - 1);
 assert.equal(once.hintOpen, true);
-const closed = spendHint(once);
+assert.equal(once.hintLocked, false);
+assert.equal(displayedHint(once), once.prompt?.hint);
+const closed = closeHint(once);
 assert.equal(closed.hintOpen, false);
-assert.equal(closed.hintsRemaining, HINTS_PER_SESSION - 1);
-let drained = closed;
-while (drained.hintsRemaining > 0) {
-  if (drained.hintOpen) drained = spendHint(drained);
-  drained = spendHint(drained);
-}
-assert.equal(drained.hintsRemaining, 0);
-assert.equal(spendHint({ ...drained, hintOpen: false }).hintsRemaining, 0);
+assert.equal(closed.hintLevel, 1);
+assert.equal(closed.hintsRemaining, HINTS_PER_ROUND - 1);
+const twice = spendHint(closed);
+assert.equal(twice.hintLevel, 2);
+assert.equal(twice.hintsRemaining, 0);
+assert.equal(twice.hintOpen, true);
+assert.equal(twice.hintLocked, true);
+assert.equal(displayedHint(twice), twice.prompt?.reveal);
+assert.ok(twice.selectedCardId);
+assert.ok(
+  twice.players
+    .find((player) => player.isHuman)
+    ?.hand.some((card) => card.id === twice.selectedCardId),
+);
+const otherCard = twice.players
+  .find((player) => player.isHuman)
+  ?.hand.find((card) => card.id !== twice.selectedCardId);
+assert.ok(otherCard);
+assert.equal(selectCard(twice, otherCard.id).selectedCardId, twice.selectedCardId);
+assert.equal(playHuman(twice, otherCard.id).selectedCardId, twice.selectedCardId);
+assert.equal(playHuman(twice, otherCard.id).hintLocked, true);
+const third = spendHint({ ...twice, hintOpen: false });
+assert.equal(third.hintLevel, 2);
+assert.equal(third.hintsRemaining, 0);
+assert.equal(third.hintOpen, true);
+assert.equal(third.hintLocked, true);
+const nextRound = beginRound(twice);
+assert.equal(nextRound.hintLevel, 0);
+assert.equal(nextRound.hintLocked, false);
+assert.equal(nextRound.hintOpen, false);
+assert.equal(nextRound.hintsRemaining, HINTS_PER_ROUND);
 assert.doesNotThrow(() => playBot(table, "clippy"));
 assert.doesNotThrow(() =>
   playBot(
@@ -145,21 +178,53 @@ assert.match(
   /0x1000 from your hand is the hex form of decimal 4096/,
 );
 
-const letterHint = deriveHint({
-  text: "What letter does the binary sequence 00001 represent?",
-  category: "binary",
-  difficulty: "easy",
-});
-assert.match(letterHint, /A = 00001/);
-assert.doesNotMatch(letterHint, /A=00001/);
+const bin001 = PROMPTS.find((prompt) => prompt.id === "bin-001");
+assert.ok(bin001);
+assert.equal(
+  bin001.hint,
+  "Slots (left to right) are worth 8, 4, 2, 1. Match each digit of 1010 to a slot and add the slots that hold a 1.",
+);
+assert.match(bin001.reveal, /10/);
+
+const letterPrompt = PROMPTS.find((prompt) => prompt.id === "bin-letter-001");
+assert.ok(letterPrompt);
+assert.equal(
+  letterPrompt.hint,
+  "Five slots (left to right) are worth 16, 8, 4, 2, 1. Match each digit of 00001 to a slot and add the slots that hold a 1. A is letter 1, B is 2, C is 3, and so on.",
+);
+assert.match(letterPrompt.reveal, /which is A/);
+assert.doesNotMatch(letterPrompt.hint, /Play the A card/);
 assert.equal(withSpacedEquals("A=00001"), "A = 00001");
 assert.equal(withSpacedEquals("A = 00001, B=00010"), "A = 00001, B = 00010");
 
 for (const prompt of PROMPTS) {
+  assert.ok(prompt.hint.trim().length > 20, `${prompt.id} needs a stored hint`);
+  assert.ok(prompt.reveal.trim().length > 8, `${prompt.id} needs a stored reveal`);
+  assert.notEqual(
+    prompt.hint,
+    prompt.reveal,
+    `${prompt.id} hint must not be the reveal`,
+  );
+  const tokens = [
+    ...(prompt.text.match(/\b[01]{4,}\b/g) ?? []),
+    ...(prompt.text.match(/\b0x[0-9A-Fa-f]+\b/g) ?? []),
+  ];
+  for (const token of tokens) {
+    assert.ok(
+      prompt.hint.includes(token) ||
+        prompt.hint.toLowerCase().includes(token.toLowerCase()),
+      `${prompt.id} hint should mention ${token}: ${prompt.hint}`,
+    );
+  }
   assert.doesNotMatch(
     prompt.hint,
     /[^\s=]=[^=\s]/,
     `${prompt.id} hint must space equals: ${prompt.hint}`,
+  );
+  assert.doesNotMatch(
+    prompt.reveal,
+    /[^\s=]=[^=\s]/,
+    `${prompt.id} reveal must space equals: ${prompt.reveal}`,
   );
   assert.doesNotMatch(
     prompt.explanation,

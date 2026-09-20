@@ -1,13 +1,13 @@
 "use client";
 
-import { Lightbulb } from "lucide-react";
-import { BOTS, HINTS_PER_SESSION, roundAccuseMs, roundTimerMs } from "@/lib/bots";
+import { Lightbulb, XIcon } from "lucide-react";
+import { BOTS, HINTS_PER_ROUND, roundAccuseMs, roundTimerMs } from "@/lib/bots";
 import { EncodingCard } from "@/components/encoding-card";
 import { EncodingHelp } from "@/components/encoding-help";
 import { HealthPips, PlayerSeat } from "@/components/player-seat";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { matchQuality, youPlayer } from "@/lib/engine";
+import { displayedHint, matchQuality, youPlayer } from "@/lib/engine";
 import { explainFromCard } from "@/lib/questions";
 import { basePoints, multiplierLabel, speedMultiplier } from "@/lib/scoring";
 import type { GameState } from "@/lib/types";
@@ -24,6 +24,7 @@ export function GameTable({
   onNext,
   onQuit,
   onHint,
+  onCloseHint,
   onOpenHelp,
   onCloseHelp,
 }: {
@@ -37,6 +38,7 @@ export function GameTable({
   onNext: () => void;
   onQuit: () => void;
   onHint: () => void;
+  onCloseHint: () => void;
   onOpenHelp: () => void;
   onCloseHelp: () => void;
 }) {
@@ -63,9 +65,10 @@ export function GameTable({
   const liveSpeed = speedMultiplier(elapsed);
   const revealing = state.phase === "resolving" || state.phase === "gameover";
   const hintsLeft = state.hintsRemaining ?? 0;
+  const hintLevel = state.hintLevel ?? 0;
   const canHint =
     (state.phase === "prompting" || state.phase === "accusing") &&
-    (hintsLeft > 0 || state.hintOpen);
+    (hintLevel < 2 || !state.hintOpen);
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -96,7 +99,7 @@ export function GameTable({
                 )}
                 disabled={!canHint}
                 onClick={onHint}
-                aria-label={`Hint, ${hintsLeft} left this session`}
+                aria-label={`Hint, ${hintsLeft} left this round`}
               >
                 <Lightbulb
                   className={cn(
@@ -107,14 +110,16 @@ export function GameTable({
                   )}
                 />
                 <span className="text-[11px] tracking-[0.16em]">
-                  {hintsLeft}/{HINTS_PER_SESSION}
+                  {hintsLeft}/{HINTS_PER_ROUND}
                 </span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {hintsLeft > 0 || state.hintOpen
-                ? "Spend a hint. Three lamps per table."
-                : "No lamps left this table."}
+              {hintLevel >= 2
+                ? "Answer is locked this round. Next round restores the lamps."
+                : hintLevel === 1
+                  ? "Second lamp gives the answer and locks your card."
+                  : "First lamp walks the question. Second lamp is the answer."}
             </TooltipContent>
           </Tooltip>
           <div className="font-mono text-sm text-amber-200">
@@ -164,11 +169,23 @@ export function GameTable({
       />
 
       {state.hintOpen && prompt ? (
-        <div className="border-b border-amber-200/20 bg-amber-950/40 px-4 py-2 text-sm text-amber-100">
-          <span className="mr-2 font-mono text-[10px] tracking-[0.2em] text-amber-200/80">
-            HINT
-          </span>
-          {prompt.hint}
+        <div className="flex items-start gap-3 border-b border-amber-200/20 bg-amber-950/50 px-4 py-3 text-sm text-amber-100">
+          <div className="min-w-0 flex-1">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-amber-200/80">
+              {hintLevel >= 2 ? "ANSWER · CARD LOCKED · CLOCK PAUSED" : "HINT · CLOCK PAUSED"}
+            </p>
+            <p className="mt-1 text-pretty leading-6">{displayedHint(state)}</p>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="mt-0.5 shrink-0 text-amber-100 hover:bg-amber-200/10"
+            aria-label="Close hint"
+            onClick={onCloseHint}
+          >
+            <XIcon className="size-4" />
+          </Button>
         </div>
       ) : null}
 
@@ -227,6 +244,7 @@ export function GameTable({
             </p>
             {state.phase === "prompting" || state.phase === "accusing" ? (
               <p className="mt-2 font-mono text-sm text-amber-100">
+                {state.hintOpen ? "PAUSED · " : ""}
                 {Math.ceil(remain / 1000)}s
                 {state.phase === "prompting" ? ` · ${liveMultiplier}` : ""}
               </p>
@@ -329,20 +347,28 @@ export function GameTable({
                 : "No cards left in hand."}
             </p>
           ) : (
-            you.hand.map((card) => (
-              <EncodingCard
-                key={card.id}
-                card={card}
-                selected={state.selectedCardId === card.id}
-                disabled={state.phase !== "prompting" || Boolean(you.played)}
-                difficulty={prompt?.difficulty}
-                onClick={
-                  state.phase === "prompting" && !you.played
-                    ? () => onSelect(card.id)
-                    : undefined
-                }
-              />
-            ))
+            you.hand.map((card) => {
+              const lockedOut =
+                state.hintLocked && card.id !== state.selectedCardId;
+              return (
+                <EncodingCard
+                  key={card.id}
+                  card={card}
+                  selected={state.selectedCardId === card.id}
+                  disabled={
+                    state.phase !== "prompting" ||
+                    Boolean(you.played) ||
+                    lockedOut
+                  }
+                  difficulty={prompt?.difficulty}
+                  onClick={
+                    state.phase === "prompting" && !you.played && !lockedOut
+                      ? () => onSelect(card.id)
+                      : undefined
+                  }
+                />
+              );
+            })
           )}
         </div>
       </section>

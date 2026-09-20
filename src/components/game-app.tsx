@@ -7,6 +7,7 @@ import { aiDelayMs, BOTS } from "@/lib/bots";
 import {
   advanceAfterResolve,
   beginRound,
+  closeHint,
   createMatch,
   playBot,
   playHuman,
@@ -36,42 +37,25 @@ export function GameApp() {
   const [clockFreeze, setClockFreeze] = useState<number | null>(null);
   const saved = useRef(false);
   const helpOpenRef = useRef(false);
+  const hintOpenRef = useRef(false);
   const clockFreezeRef = useRef<number | null>(null);
   const storeLabel = storeLabelFor(snapshot);
   const stopVoice = useTableVoice(state);
 
   helpOpenRef.current = helpOpen;
-  if (helpOpen && clockFreeze != null) {
+  hintOpenRef.current = Boolean(state?.hintOpen);
+  if ((helpOpen || state?.hintOpen) && clockFreeze != null) {
     clockFreezeRef.current = clockFreeze;
   }
 
-  const isPaused = () =>
-    helpOpenRef.current || clockFreezeRef.current != null;
+  const helpBlocksTable = () => helpOpenRef.current;
 
   const closeHelp = useCallback(() => {
-    const frozen = clockFreezeRef.current;
-    clockFreezeRef.current = null;
-    helpOpenRef.current = false;
     setHelpOpen(false);
-    setClockFreeze(null);
-    if (frozen != null) {
-      const deltaMs = Math.max(0, Date.now() - frozen);
-      if (deltaMs > 0) {
-        setState((current) =>
-          current ? shiftOpenClocks(current, deltaMs) : current,
-        );
-      }
-    }
-    setNow(Date.now());
   }, []);
 
   const openHelp = useCallback(() => {
-    if (isPaused()) return;
-    const frozen = Date.now();
-    clockFreezeRef.current = frozen;
-    helpOpenRef.current = true;
-    setClockFreeze(frozen);
-    setNow(frozen);
+    if (helpOpenRef.current) return;
     setHelpOpen(true);
   }, []);
 
@@ -79,10 +63,35 @@ export function GameApp() {
     stopVoice();
     clockFreezeRef.current = null;
     helpOpenRef.current = false;
+    hintOpenRef.current = false;
     setClockFreeze(null);
     setHelpOpen(false);
     setState(null);
   }, [stopVoice]);
+
+  useEffect(() => {
+    const overlay = helpOpen || Boolean(state?.hintOpen);
+    if (overlay) {
+      if (clockFreezeRef.current == null) {
+        const frozen = Date.now();
+        clockFreezeRef.current = frozen;
+        setClockFreeze(frozen);
+        setNow(frozen);
+      }
+      return;
+    }
+    const frozen = clockFreezeRef.current;
+    if (frozen == null) return;
+    clockFreezeRef.current = null;
+    setClockFreeze(null);
+    const deltaMs = Math.max(0, Date.now() - frozen);
+    if (deltaMs > 0) {
+      setState((current) =>
+        current ? shiftOpenClocks(current, deltaMs) : current,
+      );
+    }
+    setNow(Date.now());
+  }, [helpOpen, state?.hintOpen]);
 
   useEffect(() => {
     const id = window.setTimeout(() => setScores(readLocalScores()), 0);
@@ -91,7 +100,7 @@ export function GameApp() {
 
   useEffect(() => {
     const id = window.setInterval(() => {
-      if (helpOpenRef.current || clockFreezeRef.current != null) return;
+      if (helpOpenRef.current || hintOpenRef.current || clockFreezeRef.current != null) return;
       const time = Date.now();
       setNow(time);
       setState((current) => {
@@ -124,7 +133,7 @@ export function GameApp() {
       const t = Date.now();
       const dt = t - last;
       last = t;
-      if (helpOpenRef.current || clockFreezeRef.current != null) return;
+      if (helpOpenRef.current || hintOpenRef.current || clockFreezeRef.current != null) return;
       left -= dt;
       if (left <= 0) {
         window.clearInterval(id);
@@ -149,7 +158,7 @@ export function GameApp() {
       const t = Date.now();
       const wall = t - last;
       last = t;
-      if (helpOpenRef.current || clockFreezeRef.current != null) return;
+      if (helpOpenRef.current || hintOpenRef.current || clockFreezeRef.current != null) return;
       for (const [botId, left] of [...remaining]) {
         const next = left - wall;
         if (next <= 0) {
@@ -174,7 +183,7 @@ export function GameApp() {
       const t = Date.now();
       const dt = t - last;
       last = t;
-      if (helpOpenRef.current || clockFreezeRef.current != null) return;
+      if (helpOpenRef.current || hintOpenRef.current || clockFreezeRef.current != null) return;
       left -= dt;
       if (left <= 0) {
         window.clearInterval(id);
@@ -222,6 +231,7 @@ export function GameApp() {
         onStart={(name) => {
           saved.current = false;
           helpOpenRef.current = false;
+          hintOpenRef.current = false;
           clockFreezeRef.current = null;
           setClockFreeze(null);
           setHelpOpen(false);
@@ -237,15 +247,16 @@ export function GameApp() {
       now={clockFreeze ?? now}
       helpOpen={helpOpen}
       onSelect={(cardId) => {
-        if (isPaused()) return;
+        if (helpBlocksTable()) return;
         setState((current) => {
           if (!current) return current;
+          if (current.hintLocked && current.selectedCardId !== cardId) return current;
           if (current.selectedCardId === cardId) return playHuman(current, cardId);
           return selectCard(current, cardId);
         });
       }}
       onPlay={() => {
-        if (isPaused()) return;
+        if (helpBlocksTable()) return;
         setState((current) =>
           current && current.selectedCardId
             ? playHuman(current, current.selectedCardId)
@@ -253,26 +264,29 @@ export function GameApp() {
         );
       }}
       onAccuse={(botId) => {
-        if (isPaused()) return;
+        if (helpBlocksTable()) return;
         setState((current) => (current ? toggleAccuse(current, botId) : current));
       }}
       onResolveNow={() => {
-        if (isPaused()) return;
+        if (helpBlocksTable()) return;
         setState((current) =>
           current && current.phase === "accusing" ? resolveRound(current) : current,
         );
       }}
       onNext={() => {
-        if (isPaused()) return;
+        if (helpBlocksTable()) return;
         setState((current) =>
           current ? advanceAfterResolve(current) : current,
         );
       }}
       onQuit={leaveTable}
       onHint={() => {
-        if (isPaused()) return;
+        if (helpBlocksTable()) return;
         setState((current) => (current ? spendHint(current) : current));
       }}
+      onCloseHint={() =>
+        setState((current) => (current ? closeHint(current) : current))
+      }
       onOpenHelp={openHelp}
       onCloseHelp={closeHelp}
     />
